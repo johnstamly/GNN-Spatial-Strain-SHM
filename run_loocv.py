@@ -22,7 +22,7 @@ from gnn_utils import (
     identify_target_indexes,
     truncate_data,
     prepare_gnn_data,
-    run_loocv,
+    run_loocv_utility,
     summarize_loocv_results,
     plot_loocv_predictions
 )
@@ -50,11 +50,19 @@ def parse_args():
     parser.add_argument('--dropout', type=float, default=0.5,
                         help='Dropout probability')
     
+    parser.add_argument('--genconv-aggr', type=str, default='add',
+                        choices=['add', 'mean', 'max'],
+                        help='GNN aggregation method')
+    
     # Training parameters
     parser.add_argument('--epochs', type=int, default=1000,
                         help='Maximum number of epochs')
-    parser.add_argument('--patience', type=int, default=50,
+    parser.add_argument('--patience', type=int, default=20,
                         help='Patience for early stopping')
+    parser.add_argument('--optimizer', type=str, default='adamw',
+                        choices=['adam', 'adamw'], help='Optimizer type')
+    parser.add_argument('--weight-decay', type=float, default=0.01,
+                        help='Weight decay for optimizer')
     
     # Other parameters
     parser.add_argument('--drop-level', type=int, default=85,
@@ -109,7 +117,7 @@ def main():
     
     # Run LOOCV
     print("\nRunning LOOCV...")
-    loocv_results = run_loocv(
+    loocv_results = run_loocv_utility(
         strain_data_list,
         stiffness_data_list,
         specimen_keys,

@@ -39,7 +39,7 @@ def validate_epoch(model, loader, device):
     return total_loss / len(loader.dataset)
 
 
-def run_training(model, train_loader, val_loader, optimizer, scheduler, device, writer, 
+def run_training(model, train_loader, val_loader, device, writer, optimizer, scheduler,
                  epochs, patience=20, model_save_path="best_model/best_model_state.pth"):
     """Run the training loop with early stopping and model saving."""
     best_val_loss = float('inf')

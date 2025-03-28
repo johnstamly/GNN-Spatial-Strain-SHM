@@ -53,7 +53,7 @@ from gnn_utils.data_processing import (
 )
 
 from gnn_utils.loocv import (
-    run_loocv,
+    run_loocv_utility,
     summarize_loocv_results,
     plot_loocv_predictions
 )
@@ -100,7 +100,7 @@ __all__ = [
     'prepare_gnn_data',
     
     # LOOCV
-    'run_loocv',
+    'run_loocv_utility',
     'summarize_loocv_results',
     'plot_loocv_predictions'
 ]

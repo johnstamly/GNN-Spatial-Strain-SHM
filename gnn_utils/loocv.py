@@ -15,7 +15,7 @@ from tensorboardX import SummaryWriter
 from gnn_utils import EdgeAttrGNN, create_graph_data_objects, run_training, run_inference, unnormalize_target, compute_normalization_params
 
 
-def run_loocv(strain_data: List[np.ndarray], 
+def run_loocv_utility(strain_data: List[np.ndarray], 
               stiffness_data: List[np.ndarray], 
               specimen_keys: List[str], 
               num_nodes: int = 16, 
@@ -124,7 +124,7 @@ def run_loocv(strain_data: List[np.ndarray],
         print(f"\nTraining model for fold {val_idx+1}/{len(specimen_keys)}...")
         model_save_path = f"best_model/fold_{val_idx+1}_{val_key}_model_state.pth"
         model, train_losses, val_losses = run_training(
-            model, train_loader, val_loader, optimizer, scheduler, device, writer,
+            model, train_loader, val_loader, device, writer,  optimizer, scheduler,
             epochs=epochs, patience=patience, model_save_path=model_save_path
         )
         
