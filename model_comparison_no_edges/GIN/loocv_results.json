@@ -1,0 +1,31 @@
+{
+    "df1": {
+        "mse": 6.711060523986816,
+        "rmse": 2.590571403503418,
+        "mape": 1.7941523343324661,
+        "model_path": "model_comparison_no_edges\\GIN/fold_1_df1_model_state.pth"
+    },
+    "df2": {
+        "mse": 5.755867004394531,
+        "rmse": 2.3991386890411377,
+        "mape": 1.8693652004003525,
+        "model_path": "model_comparison_no_edges\\GIN/fold_2_df2_model_state.pth"
+    },
+    "df3": {
+        "mse": 9.224808692932129,
+        "rmse": 3.0372369289398193,
+        "mape": 1.9581569358706474,
+        "model_path": "model_comparison_no_edges\\GIN/fold_3_df3_model_state.pth"
+    },
+    "df4": {
+        "mse": 2.093695640563965,
+        "rmse": 1.4469608068466187,
+        "mape": 1.1215310543775558,
+        "model_path": "model_comparison_no_edges\\GIN/fold_4_df4_model_state.pth"
+    },
+    "summary": {
+        "mean_mse": 5.94635796546936,
+        "mean_rmse": 2.3684769570827484,
+        "mean_mape": 1.6858013812452555
+    }
+}

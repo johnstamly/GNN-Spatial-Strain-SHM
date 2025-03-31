@@ -69,14 +69,13 @@ def plot_stiffness_vs_cycles(stiffness_data, x_rescaled, specimen_keys, title=No
         
         # Plot stiffness data
         plt.scatter(x_values, stiffness_data[key].iloc[:, 0], 
-                   label=fod_label, s=5)  # Use scatter for potentially sparse data
+                   label=fod_label, s=1)  # Use scatter for potentially sparse data
     
     # Customize plot
     plt.legend(loc='best', markerscale=3)
     plt.title(title or "Normalized Stiffness Reduction vs. Cycles")
     plt.xlabel("Cycles")
     plt.ylabel("Normalized Stiffness (%)")
-    plt.ylim(bottom=min(0, plt.ylim()[0]))  # Ensure y-axis starts at or below 0
     plt.grid(True)
     plt.show()
 

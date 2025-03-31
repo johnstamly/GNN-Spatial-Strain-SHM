@@ -1,0 +1,32 @@
+[
+    {
+        "model_name": "GENConv",
+        "mean_mse": 3.047808885574341,
+        "mean_rmse": 1.714134693145752,
+        "mean_mape": 1.253126747906208
+    },
+    {
+        "model_name": "SAGPool",
+        "mean_mse": 7.349678039550781,
+        "mean_rmse": 2.5734617710113525,
+        "mean_mape": 1.816610456444323
+    },
+    {
+        "model_name": "GATv2",
+        "mean_mse": 11.801631927490234,
+        "mean_rmse": 3.171292304992676,
+        "mean_mape": 2.067618863657117
+    },
+    {
+        "model_name": "GCN",
+        "mean_mse": 5.86014461517334,
+        "mean_rmse": 2.1850426197052,
+        "mean_mape": 1.8438802799209952
+    },
+    {
+        "model_name": "EdgeConv",
+        "mean_mse": 8.592374801635742,
+        "mean_rmse": 2.562403440475464,
+        "mean_mape": 1.7875391524285078
+    }
+]

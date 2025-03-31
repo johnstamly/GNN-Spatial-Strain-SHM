@@ -17,6 +17,22 @@ from gnn_utils.model import (
     weighted_mse_loss
 )
 
+from gnn_utils.model_variants import (
+    GENConvModel,
+    SAGPoolModel,
+    GATv2Model,
+    GCNModel,
+    EdgeConvModel
+)
+
+from gnn_utils.model_variants_no_edges import (
+    GCNModel_NoEdges,
+    GINModel,
+    SGConvModel,
+    GraphSAGEModel,
+    ChebConvModel
+)
+
 from gnn_utils.training import (
     train_epoch,
     validate_epoch,
@@ -68,6 +84,20 @@ __all__ = [
     'EdgeAttrGNN',
     'count_parameters',
     'weighted_mse_loss',
+
+    # Model variants
+    'GENConvModel',
+    'SAGPoolModel',
+    'GATv2Model',
+    'GCNModel',
+    'EdgeConvModel',
+    
+    # Model variants without edge attributes
+    'GCNModel_NoEdges',
+    'GINModel',
+    'SGConvModel',
+    'GraphSAGEModel',
+    'ChebConvModel',
     
     # Training
     'train_epoch',

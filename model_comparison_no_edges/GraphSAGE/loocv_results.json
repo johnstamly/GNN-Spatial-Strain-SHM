@@ -1,0 +1,31 @@
+{
+    "df1": {
+        "mse": 6.000504016876221,
+        "rmse": 2.4495925903320312,
+        "mape": 1.7138971015810966,
+        "model_path": "model_comparison_no_edges\\GraphSAGE/fold_1_df1_model_state.pth"
+    },
+    "df2": {
+        "mse": 6.058638095855713,
+        "rmse": 2.461430072784424,
+        "mape": 1.884983479976654,
+        "model_path": "model_comparison_no_edges\\GraphSAGE/fold_2_df2_model_state.pth"
+    },
+    "df3": {
+        "mse": 2.630376100540161,
+        "rmse": 1.6218434572219849,
+        "mape": 1.1722275987267494,
+        "model_path": "model_comparison_no_edges\\GraphSAGE/fold_3_df3_model_state.pth"
+    },
+    "df4": {
+        "mse": 1.0052759647369385,
+        "rmse": 1.0026345252990723,
+        "mape": 0.6860642228275537,
+        "model_path": "model_comparison_no_edges\\GraphSAGE/fold_4_df4_model_state.pth"
+    },
+    "summary": {
+        "mean_mse": 3.9236985445022583,
+        "mean_rmse": 1.883875161409378,
+        "mean_mape": 1.3642931007780135
+    }
+}

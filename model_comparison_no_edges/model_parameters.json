@@ -1,0 +1,7 @@
+{
+    "GCN_NoEdges": 15105,
+    "GIN": 27588,
+    "SGConv": 15105,
+    "GraphSAGE": 27393,
+    "ChebConv": 39681
+}

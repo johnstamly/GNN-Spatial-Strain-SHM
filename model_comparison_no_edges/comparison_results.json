@@ -1,0 +1,32 @@
+[
+    {
+        "model_name": "GCN_NoEdges",
+        "mean_mse": 6.807619214057922,
+        "mean_rmse": 2.48547226190567,
+        "mean_mape": 1.6151913441717625
+    },
+    {
+        "model_name": "GIN",
+        "mean_mse": 5.94635796546936,
+        "mean_rmse": 2.3684769570827484,
+        "mean_mape": 1.6858013812452555
+    },
+    {
+        "model_name": "SGConv",
+        "mean_mse": 7.478388071060181,
+        "mean_rmse": 2.6714597642421722,
+        "mean_mape": 1.9284887006506324
+    },
+    {
+        "model_name": "GraphSAGE",
+        "mean_mse": 3.9236985445022583,
+        "mean_rmse": 1.883875161409378,
+        "mean_mape": 1.3642931007780135
+    },
+    {
+        "model_name": "ChebConv",
+        "mean_mse": 6.504526048898697,
+        "mean_rmse": 2.325456976890564,
+        "mean_mape": 1.6801354242488742
+    }
+]

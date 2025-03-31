@@ -1,0 +1,14 @@
+{
+    "with_edges": {
+        "model_name": "GENConv",
+        "mean_mse": 4.56601619720459,
+        "mean_rmse": 1.924263596534729,
+        "mean_mape": 1.4679818181321025
+    },
+    "no_edges": {
+        "model_name": "GraphSAGE",
+        "mean_mse": 5.283234596252441,
+        "mean_rmse": 1.993283748626709,
+        "mean_mape": 1.4017545501701534
+    }
+}

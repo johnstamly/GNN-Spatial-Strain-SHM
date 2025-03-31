@@ -85,7 +85,7 @@ def run_training(model, train_loader, val_loader, device, writer, optimizer, sch
 
     # Load the best model state after training completes or stops early
     if best_model_state is not None:
-        model.load_state_dict(torch.load(model_save_path))  # Use default map_location
+        model.load_state_dict(torch.load(model_save_path, weights_only=True))
         print(f"\nLoaded best model state from: {model_save_path}")
     else:
         print("\nWarning: No best model state was saved during training.")
@@ -135,8 +135,8 @@ def plot_predictions(true_values, predicted_values, x_values, mse, rmse, mape, t
     """Plots true vs. predicted values against cycles or time."""
     plt.figure(figsize=(12, 6))
     
-    plt.plot(x_values, true_values, label="True Values", color="blue", marker='o', linestyle='-', markersize=1, alpha=0.7)
-    plt.plot(x_values, predicted_values, label="Predicted Values", color="red", marker='x', linestyle='--', markersize=1, alpha=0.7)
+    plt.plot(x_values, true_values, label="True Values", color="blue", marker='o', linestyle='-', markersize=0.5, alpha=0.7)
+    plt.plot(x_values, predicted_values, label="Predicted Values", color="red", marker='x', linestyle='--', markersize=0.5, alpha=0.7)
     
     # Metrics text box
     metrics_text = (
@@ -153,7 +153,6 @@ def plot_predictions(true_values, predicted_values, x_values, mse, rmse, mape, t
     plt.title(title)
     plt.legend()
     plt.grid(True)
-    plt.ylim(bottom=70)  # Ensure y-axis starts at or below 0
     plt.tight_layout()
     plt.show()
 

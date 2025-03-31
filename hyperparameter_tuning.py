@@ -52,12 +52,12 @@ if __name__ == "__main__":
     study = optuna.create_study(
         direction="minimize",
         storage="sqlite:///hpo_study.db",
-        pruner=optuna.pruners.MedianPruner(n_warmup_steps=5),
+        pruner=optuna.pruners.MedianPruner(n_warmup_steps=15),
         load_if_exists=True
     )
     
     # Run optimization
-    study.optimize(objective, n_trials=50, show_progress_bar=True)
+    study.optimize(objective, n_trials=300, show_progress_bar=True)
 
     # Print results
     print("\nBest trial:")

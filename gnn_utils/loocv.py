@@ -26,6 +26,7 @@ def run_loocv_utility(strain_data: List[np.ndarray],
               epochs: int = 1000, 
               patience: int = 50,
               visualize: bool = True,
+               model_class = None,
               save_plots: bool = False,
               output_dir: str = "results") -> Dict[str, Dict[str, Any]]:
     """
@@ -41,6 +42,7 @@ def run_loocv_utility(strain_data: List[np.ndarray],
         num_gnn_layers: Number of GNN layers
         dropout_p: Dropout probability
         epochs: Maximum number of epochs
+        model_class: Custom model class or function to create the model (default: EdgeAttrGNN)
         patience: Patience for early stopping
         visualize: Whether to visualize training progress
         save_plots: Whether to save plots to files instead of displaying them
@@ -99,18 +101,29 @@ def run_loocv_utility(strain_data: List[np.ndarray],
         print(f"  Validation samples: {len(val_data)} (from {val_key})")
         
         # Create model
-        model = EdgeAttrGNN(
-            num_node_features=1,  # Assuming HI is a single feature per node
-            edge_feature_dim=1,   # Assuming HI_i - HI_j is a single feature per edge
-            hidden_dim=hidden_dim,
-            output_dim=1,         # Predicting a single stiffness value
-            num_gnn_layers=num_gnn_layers,
-            dropout_p=dropout_p
-        ).to(device)
+        # (using custom model class if provided)
+        if model_class is None:
+            # Use default EdgeAttrGNN if no custom model class is provided
+            from gnn_utils.model import EdgeAttrGNN
+            model = EdgeAttrGNN(
+                num_node_features=1,  # Assuming HI is a single feature per node
+                edge_feature_dim=1,   # Assuming HI_i - HI_j is a single feature per edge
+                hidden_dim=hidden_dim,
+                output_dim=1,         # Predicting a single stiffness value
+                num_gnn_layers=num_gnn_layers,
+                dropout_p=dropout_p
+            )
+        else:
+            # Use the provided model class or function
+            model = model_class(
+                num_node_features=1, edge_feature_dim=1, hidden_dim=hidden_dim,
+                output_dim=1, num_gnn_layers=num_gnn_layers, dropout_p=dropout_p
+            )
+        model = model.to(device)
         
         # Optimizer and Scheduler
-        optimizer = optim.AdamW(model.parameters(), lr=0.01, weight_decay=1e-8)
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.8, patience=10, verbose=True)
+        optimizer = optim.AdamW(model.parameters(), lr=0.01, weight_decay=1e-6)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.8, patience=10)
         
         # Data Loaders
         train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
@@ -240,8 +253,8 @@ def plot_loocv_predictions(loocv_results: Dict[str, Dict[str, Any]],
         pred_values = result['predicted_values']
         x_values = np.arange(len(true_values))
         
-        plt.plot(x_values, true_values, label="True Values", color="blue", marker='o', linestyle='-', markersize=3, alpha=0.7)
-        plt.plot(x_values, pred_values, label="Predicted Values", color="red", marker='x', linestyle='--', markersize=4, alpha=0.7)
+        plt.plot(x_values, true_values, label="True Values", color="blue", marker='o', linestyle='-', markersize=1, alpha=0.7)
+        plt.plot(x_values, pred_values, label="Predicted Values", color="red", marker='x', linestyle='--', markersize=1, alpha=0.7)
         
         # Metrics text box
         metrics_text = (
@@ -257,8 +270,9 @@ def plot_loocv_predictions(loocv_results: Dict[str, Dict[str, Any]],
         plt.ylabel("Stiffness (%)")
         plt.title(f"Fold: {key}")
         plt.legend()
+        plt.xlim(0, len(true_values)-1)
         plt.grid(True)
-        plt.ylim(bottom=min(0, plt.ylim()[0]))  # Ensure y-axis starts at or below 0
+     
         
     plt.tight_layout()
     plt.suptitle("LOOCV: True vs. Predicted Stiffness for Each Fold", fontsize=16, y=1.02)
