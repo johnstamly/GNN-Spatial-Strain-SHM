@@ -12,7 +12,9 @@ from typing import Dict, List, Tuple, Any, Callable, Optional
 from torch_geometric.loader import DataLoader
 from tensorboardX import SummaryWriter
 
-from gnn_utils import EdgeAttrGNN, create_graph_data_objects, run_training, run_inference, unnormalize_target, compute_normalization_params
+from gnn_utils import EdgeAttrGNN, create_graph_data_objects, run_training, run_inference
+from gnn_utils import unnormalize_target, compute_normalization_params
+from gnn_utils.utils import calculate_cycles_from_timesteps
 
 
 def run_loocv_utility(strain_data: List[np.ndarray], 
@@ -232,7 +234,8 @@ def summarize_loocv_results(loocv_results: Dict[str, Dict[str, Any]]) -> Tuple[f
 
 def plot_loocv_predictions(loocv_results: Dict[str, Dict[str, Any]], 
                           save_plots: bool = False, 
-                          output_dir: str = "results") -> None:
+                          output_dir: str = "results",
+                          cycles_dict: Dict[str, np.ndarray] = None) -> None:
     """
     Plot predictions for each fold.
     
@@ -240,6 +243,7 @@ def plot_loocv_predictions(loocv_results: Dict[str, Dict[str, Any]],
         loocv_results: Dictionary of LOOCV results
         save_plots: Whether to save plots to files instead of displaying them
         output_dir: Directory to save plots if save_plots is True
+        cycles_dict: Optional dictionary mapping keys to cycle values for x-axis
     """
     if save_plots:
         os.makedirs(output_dir, exist_ok=True)
@@ -251,7 +255,14 @@ def plot_loocv_predictions(loocv_results: Dict[str, Dict[str, Any]],
         
         true_values = result['true_values']
         pred_values = result['predicted_values']
-        x_values = np.arange(len(true_values))
+        
+        # Use cycles for x-axis if provided, otherwise use timesteps
+        if cycles_dict is not None and key in cycles_dict:
+            x_values = cycles_dict[key][:len(true_values)]
+            x_label = "Cycles"
+        else:
+            x_values = np.arange(len(true_values))
+            x_label = "Timestep"
         
         plt.plot(x_values, true_values, label="True Values", color="blue", marker='o', linestyle='-', markersize=1, alpha=0.7)
         plt.plot(x_values, pred_values, label="Predicted Values", color="red", marker='x', linestyle='--', markersize=1, alpha=0.7)
@@ -266,11 +277,10 @@ def plot_loocv_predictions(loocv_results: Dict[str, Dict[str, Any]],
                      bbox=dict(boxstyle="round,pad=0.5", fc="white", ec="gray", lw=0.5, alpha=0.8),
                      ha='right', va='top', fontsize=10, family='monospace')
         
-        plt.xlabel("Timestep")
+        plt.xlabel(x_label)
         plt.ylabel("Stiffness (%)")
         plt.title(f"Fold: {key}")
         plt.legend()
-        plt.xlim(0, len(true_values)-1)
         plt.grid(True)
      
         

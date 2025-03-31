@@ -18,6 +18,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # Import utility functions
+from gnn_utils.utils import calculate_cycles_from_timesteps
 from gnn_utils import (
     setup_matplotlib_style,
     load_data,
@@ -221,7 +222,7 @@ def create_model(model_name, num_node_features, edge_feature_dim, hidden_dim,
 
 
 def run_best_model(model_name, use_edge_attr, strain_data_list, stiffness_data_list, 
-                  specimen_keys, args, output_subdir):
+                  specimen_keys, args, output_subdir, preprocessed_data=None):
     """Run LOOCV with the best model."""
     # Create model creator function
     def model_creator(num_node_features, edge_feature_dim, hidden_dim, output_dim, 
@@ -271,22 +272,30 @@ def run_best_model(model_name, use_edge_attr, strain_data_list, stiffness_data_l
     # Summarize and save results
     mean_mse, mean_rmse, mean_mape = summarize_loocv_results(loocv_results)
     
+    # Calculate cycles for x-axis if preprocessed data is available
+    cycles_dict = None
+    if preprocessed_data is not None:
+        strain_post = preprocessed_data.get('strain_post')
+        stiffness_post = preprocessed_data.get('stiffness_post')
+        last_cycle = preprocessed_data.get('last_cycle')
+        
+        if strain_post is not None and stiffness_post is not None and last_cycle is not None:
+            cycles_dict = calculate_cycles_from_timesteps(strain_post, stiffness_post, last_cycle)
+    
     if not args.no_visualize:
         plot_loocv_predictions(
             loocv_results,
             save_plots=args.save_plots,
-            output_dir=output_dir
+            output_dir=output_dir,
+            cycles_dict=cycles_dict
         )
     
     # Save detailed results
     serializable_results = {
         key: {
-            'mse': float(result['mse']),
-  # Convert numpy.float32 to Python float
-            'rmse': float(result['rmse']),
-  # Convert numpy.float32 to Python float
-            'mape': float(result['mape']),
-  # Convert numpy.float32 to Python float
+            'mse': float(result['mse']),  # Convert numpy.float32 to Python float
+            'rmse': float(result['rmse']),  # Convert numpy.float32 to Python float
+            'mape': float(result['mape']),  # Convert numpy.float32 to Python float
             'model_path': result['model_path']
         }
         for key, result in loocv_results.items()
@@ -301,14 +310,21 @@ def run_best_model(model_name, use_edge_attr, strain_data_list, stiffness_data_l
         json.dump(serializable_results, f, indent=4)
     
     # Create detailed plots
-    create_detailed_plots(loocv_results, output_dir)
+    create_detailed_plots(loocv_results, output_dir, 
+                         strain_post=preprocessed_data.get('strain_post'),
+                         stiffness_post=preprocessed_data.get('stiffness_post'),
+                         last_cycle=preprocessed_data.get('last_cycle'))
     
-    return float(mean_mse), float(mean_rmse), float(mean_mape
-)  # Convert numpy.float32 to Python float
+    return float(mean_mse), float(mean_rmse), float(mean_mape)  # Convert numpy.float32 to Python float
 
 
-def create_detailed_plots(loocv_results, output_dir):
+def create_detailed_plots(loocv_results, output_dir, strain_post=None, stiffness_post=None, last_cycle=None):
     """Create detailed plots for the best model."""
+    # Calculate cycles for x-axis if preprocessed data is available
+    cycles_dict = None
+    if strain_post is not None and stiffness_post is not None and last_cycle is not None:
+        cycles_dict = calculate_cycles_from_timesteps(strain_post, stiffness_post, last_cycle)
+    
     # Plot true vs predicted values for each fold
     for key, result in loocv_results.items():
         if key == 'summary':
@@ -378,7 +394,14 @@ def create_detailed_plots(loocv_results, output_dir):
         plt.close()
         
         # 3. Time series plot with error bands
-        x_values = np.arange(len(true_values))
+        # Use cycles for x-axis if available, otherwise use timesteps
+        if cycles_dict is not None and key in cycles_dict:
+            x_values = cycles_dict[key][:len(true_values)]
+            x_label = "Cycles"
+        else:
+            x_values = np.arange(len(true_values))
+            x_label = "Timestep"
+            
         plt.figure(figsize=(12, 6))
         
         # Plot true values
@@ -392,7 +415,7 @@ def create_detailed_plots(loocv_results, output_dir):
                         np.array(pred_values) + error, 
                         color='r', alpha=0.2, label='Error Band')
         
-        plt.xlabel('Timestep')
+        plt.xlabel(x_label)
         plt.ylabel('Stiffness (%)')
         plt.title(f'Fold {key}: True vs Predicted Values Over Time')
         plt.legend()
@@ -415,6 +438,9 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     os.makedirs('log_best_model', exist_ok=True)
     
+    # Dictionary to store preprocessed data for cycle calculation
+    preprocessed_data = {}
+    
     # Get best model information
     best_with_edges, best_no_edges = get_best_model_info(args.model_type)
     
@@ -424,6 +450,9 @@ def main():
     
     print("\nPreprocessing data...")
     stiffness_post, strain_post, last_cycle = preprocess_data(stiffness_dfs, strain_dfs)
+    
+    # Store preprocessed data for cycle calculation
+    preprocessed_data = {'strain_post': strain_post, 'stiffness_post': stiffness_post, 'last_cycle': last_cycle}
     
     print("\nIdentifying target indexes...")
     target_indexes = identify_target_indexes(stiffness_post)
@@ -450,7 +479,8 @@ def main():
             stiffness_data_list, 
             specimen_keys, 
             args,
-            f"{model_name}_with_edges"
+            f"{model_name}_with_edges",
+            preprocessed_data
         )
         results['with_edges'] = {
             'model_name': model_name,
@@ -468,7 +498,8 @@ def main():
             stiffness_data_list, 
             specimen_keys, 
             args,
-            f"{model_name}_no_edges"
+            f"{model_name}_no_edges",
+            preprocessed_data
         )
         results['no_edges'] = {
             'model_name': model_name,
@@ -521,7 +552,6 @@ def main():
         print(f"  MAPE improvement: {improvement_mape:.2f}%")
     
     print(f"\nResults saved to: {os.path.abspath(args.output_dir)}")
-
 
 
 if __name__ == '__main__':

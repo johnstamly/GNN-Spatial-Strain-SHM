@@ -1,14 +1,14 @@
 {
     "with_edges": {
         "model_name": "GENConv",
-        "mean_mse": 4.56601619720459,
-        "mean_rmse": 1.924263596534729,
-        "mean_mape": 1.4679818181321025
+        "mean_mse": 6.15905237197876,
+        "mean_rmse": 2.2858095169067383,
+        "mean_mape": 1.690642989706248
     },
     "no_edges": {
         "model_name": "GraphSAGE",
-        "mean_mse": 5.283234596252441,
-        "mean_rmse": 1.993283748626709,
-        "mean_mape": 1.4017545501701534
+        "mean_mse": 6.4195475578308105,
+        "mean_rmse": 2.1825363636016846,
+        "mean_mape": 1.5448951162397861
     }
 }
