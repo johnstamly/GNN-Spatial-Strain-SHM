@@ -5,114 +5,96 @@ This project demonstrates the use of Graph Neural Networks (GNNs) for predicting
 ## Project Structure
 
 - `run_loocv.py`: Main Python script to run Leave-One-Out Cross-Validation
-- `Cline_test.ipynb`: Original Jupyter notebook containing the full code
-- `Cline_test_simplified.ipynb`: Simplified notebook that uses the `gnn_utils` package
-- `Cline_test_loocv.ipynb`: Notebook implementing Leave-One-Out Cross-Validation (LOOCV)
+- `compare_models.py`: Script to compare different GNN architectures with edge attributes
+- `compare_models_no_edges.py`: Script to compare GNN architectures without edge attributes
+- `run_best_comparison_model.py`: Script to run the best performing model from comparisons
 - `gnn_utils/`: Python package containing utility functions and classes
   - `data_preprocessing.py`: Basic data preprocessing functions
-  - `data_processing.py`: Advanced data processing functions for the pipeline
+  - `data_processing.py`: Advanced data processing functions
   - `model.py`: GNN model definition
   - `training.py`: Training and evaluation utilities
   - `graph_data.py`: Graph data preparation utilities
   - `visualization.py`: Plotting and visualization functions
   - `loocv.py`: Leave-One-Out Cross-Validation utilities
   - `__init__.py`: Package initialization
-  - `README.md`: Package documentation
 - `Data/`: Directory containing the input data
   - `Stiffness_Reduction/`: Stiffness reduction data
   - `Strain/`: Strain sensor data
 
-## Purpose
+## Model Architectures
 
-The main goal of this project is to reduce the lines of code in the notebook to the bare minimum and keep only lines of code that are acting as inputs. This helps to reduce the token size when editing the code with LLM models.
+### With Edge Attributes
+1. **GENConvModel**: Uses GENConv layers with edge attributes
+2. **SAGPoolModel**: Implements SAGPooling for hierarchical pooling
+3. **GATv2Model**: Uses Graph Attention Network v2 layers
+4. **GCNModel**: Implements Graph Convolutional Network layers
+5. **EdgeConvModel**: Uses EdgeConv layers with dynamic edge features
 
-The original notebook has been refactored to move all utility functions and reusable code into the `gnn_utils` package, making the notebook cleaner and more focused on the workflow rather than implementation details.
+### Without Edge Attributes
+1. **GCNModel_NoEdges**: Graph Convolutional Network without edge attributes
+2. **GINModel**: Graph Isomorphism Network
+3. **SGConvModel**: Simplified Graph Convolution
+4. **GraphSAGEModel**: Graph SAmple and aggreGatE
+5. **ChebConvModel**: Chebyshev Spectral Graph Convolution
 
-Additionally, a Python script (`run_loocv.py`) has been created to run the LOOCV process from the command line, further reducing the need for large notebooks.
+## Running Model Comparisons
 
-## Workflow
-
-1. **Data Loading**: Load stiffness reduction and strain data from HDF5 files
-2. **Data Preprocessing**: Process the data to prepare it for the GNN
-   - Resample strain data to a fixed frequency
-   - Apply rolling mean smoothing
-   - Apply custom feature engineering
-   - Normalize stiffness data
-   - Align timestamps between strain and stiffness data
-3. **Data Truncation**: Truncate the data at specific stiffness reduction levels
-4. **GNN Data Preparation**: Prepare the data for the GNN
-   - Define train/validation split
-   - Compute normalization parameters
-   - Construct graph data objects
-5. **Model Definition**: Define the GNN architecture
-6. **Training**: Train the model on the prepared data
-7. **Evaluation**: Evaluate the model on validation data
-
-## Cross-Validation
-
-The `run_loocv.py` script implements Leave-One-Out Cross-Validation (LOOCV) for more robust model evaluation. Since we have 4 available specimens (FOD panels), we use 3 for training and 1 for validation in each fold, rotating through all specimens. This approach:
-
-1. Provides a more reliable estimate of model performance
-2. Helps identify which specimens are more difficult to predict
-3. Allows for better generalization to unseen data
-
-## Usage
-
-### Running the Python Script
-
+### With Edge Attributes
 ```bash
-# Run with default parameters
-python run_loocv.py
-
-# Run with custom parameters
-python run_loocv.py --stiffness-path Data/Stiffness_Reduction --strain-path Data/Strain --num-nodes 16 --batch-size 128 --hidden-dim 64 --num-gnn-layers 4 --dropout 0.5 --epochs 1000 --patience 50 --drop-level 85
-
-# Run without visualization
-python run_loocv.py --no-visualize
-
-# Save plots to files instead of displaying them (useful for headless environments)
-python run_loocv.py --save-plots --output-dir results
+python compare_models.py [options]
 ```
 
-#### Command-Line Options
+### Without Edge Attributes
+```bash
+python compare_models_no_edges.py [options]
+```
 
+Common options for both scripts:
 - `--stiffness-path`: Path to stiffness data directory
 - `--strain-path`: Path to strain data directory
-- `--num-nodes`: Number of nodes in each graph
 - `--batch-size`: Batch size for training
-- `--hidden-dim`: Hidden dimension for the GNN model
+- `--hidden-dim`: Hidden dimension for GNN models
 - `--num-gnn-layers`: Number of GNN layers
 - `--dropout`: Dropout probability
 - `--epochs`: Maximum number of epochs
 - `--patience`: Patience for early stopping
-- `--drop-level`: Stiffness reduction level for truncation
-- `--no-visualize`: Disable visualization
-- `--save-plots`: Save plots to files instead of displaying them
-- `--output-dir`: Directory to save results and plots
+- `--output-dir`: Directory to save results
 
-### Running the Notebooks
+## Running Best Models
 
-To run the simplified notebook:
-
+After running comparisons, run the best model(s) with:
 ```bash
-jupyter notebook Cline_test_simplified.ipynb
+python run_best_comparison_model.py [options]
 ```
 
-To run the LOOCV notebook:
+Options:
+- `--model-type`: 'with_edges', 'no_edges', or 'both'
+- `--epochs`: Maximum number of epochs
+- `--patience`: Patience for early stopping
+- `--save-plots`: Save plots to files
+- `--output-dir`: Directory to save results
 
-```bash
-jupyter notebook Cline_test_loocv.ipynb
-```
+## Package Documentation (gnn_utils)
 
-## Handling Display Issues
+Key modules:
+- `data_preprocessing.py`: Data resampling and normalization
+- `model.py`: GNN model definitions
+- `training.py`: Training utilities
+- `graph_data.py`: Graph data preparation
+- `visualization.py`: Plotting functions
 
-If you encounter display issues when running the script (e.g., "Could not load the Qt platform plugin"), use the `--save-plots` option to save plots to files instead of displaying them:
+## Interpreting Results
 
-```bash
-python run_loocv.py --save-plots
-```
+Key metrics:
+- **MSE (Mean Squared Error)**: Lower is better
+- **RMSE (Root Mean Squared Error)**: Lower is better
+- **MAPE (Mean Absolute Percentage Error)**: Lower is better
+- **R²**: Higher is better
 
-This is particularly useful when running the script in headless environments or over SSH connections without X11 forwarding.
+Visualizations:
+- Scatter plots of true vs predicted values
+- Residual plots showing prediction errors
+- Time series plots with error bands
 
 ## Dependencies
 
@@ -123,13 +105,9 @@ This is particularly useful when running the script in headless environments or 
 - Pandas
 - Matplotlib
 - TensorBoardX
-- scienceplots (optional, for enhanced plotting styles)
+- scienceplots (optional)
 
-### Installing Dependencies
-
+Install with:
 ```bash
 pip install torch torch-geometric numpy pandas matplotlib tensorboardx
-pip install scienceplots  # Optional, for enhanced plotting styles
-```
-
-If scienceplots is not installed, the code will fall back to standard matplotlib styles.
+pip install scienceplots  # Optional
