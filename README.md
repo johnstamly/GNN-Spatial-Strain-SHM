@@ -108,7 +108,9 @@ The `results/` directory will contain `loocv_results.json` with key metrics (MSE
 
 ## License
 
-[Add License Information Here]
+The code in this repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+The data in the `Data/` directory is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
 
 ## Citation
 
