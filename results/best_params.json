@@ -1,9 +1,0 @@
-{
-  "best_value": 2.699277400970459,
-  "params": {
-    "num_gnn_layers": 3,
-    "hidden_dim": 64,
-    "dropout": 0.30666031788297343,
-    "batch_size": 64
-  }
-}

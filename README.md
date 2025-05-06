@@ -1,25 +1,44 @@
-# Graph Neural Network for Stiffness Prediction
+# Graph Neural Network for Stiffness Prediction - Code for Scientific Paper
 
-This project demonstrates the use of Graph Neural Networks (GNNs) for predicting stiffness reduction in materials based on strain sensor data.
+This repository contains the code accompanying the scientific paper "[Paper Title Here]" (link to paper once available), which explores the use of Graph Neural Networks (GNNs) for predicting stiffness reduction in materials based on strain sensor data.
 
 ## Project Structure
 
-- `run_loocv.py`: Main Python script to run Leave-One-Out Cross-Validation
-- `compare_models.py`: Script to compare different GNN architectures with edge attributes
-- `compare_models_no_edges.py`: Script to compare GNN architectures without edge attributes
-- `run_best_comparison_model.py`: Script to run the best performing model from comparisons
-- `gnn_utils/`: Python package containing utility functions and classes
-  - `data_preprocessing.py`: Basic data preprocessing functions
-  - `data_processing.py`: Advanced data processing functions
-  - `model.py`: GNN model definition
-  - `training.py`: Training and evaluation utilities
-  - `graph_data.py`: Graph data preparation utilities
-  - `visualization.py`: Plotting and visualization functions
-  - `loocv.py`: Leave-One-Out Cross-Validation utilities
-  - `__init__.py`: Package initialization
-- `Data/`: Directory containing the input data
-  - `Stiffness_Reduction/`: Stiffness reduction data
-  - `Strain/`: Strain sensor data
+- `run_loocv.py`: Main Python script to run Leave-One-Out Cross-Validation for the best performing model.
+- `run_best_comparison_model.py`: Script to run the best performing model from comparisons (used for generating results in the paper).
+- `gnn_utils/`: Python package containing utility functions and classes for data processing, model definition, training, and visualization.
+  - `data_preprocessing.py`: Basic data preprocessing functions.
+  - `data_processing.py`: Advanced data processing functions.
+  - `model.py`: GNN model definition.
+  - `training.py`: Training and evaluation utilities.
+  - `graph_data.py`: Graph data preparation utilities.
+  - `visualization.py`: Plotting and visualization functions.
+  - `loocv.py`: Leave-One-Out Cross-Validation utilities.
+  - `__init__.py`: Package initialization.
+- `Data/`: Directory containing the input data used in the paper.
+  - `Stiffness_Reduction/`: Stiffness reduction data.
+  - `Strain/`: Strain sensor data.
+- `Comparison/`: This directory contains scripts and results from model comparisons and edge attribute analysis that were performed during the research phase. These are included for completeness but are not necessary to reproduce the main results presented in the paper.
+  - `best_comparison_model/`: Results from running the best comparison models.
+  - `edge_comparison/`: Results and analysis comparing models with and without edge attributes.
+  - `model_comparison/`: Results from comparing different GNN architectures with edge attributes.
+  - `model_comparison_no_edges/`: Results from comparing different GNN architectures without edge attributes.
+  - `compare_edge_vs_no_edge.py`: Script to compare models with and without edge attributes.
+  - `compare_models_fixed.py`: Script for fixed model comparisons.
+  - `compare_models_no_edges.py`: Script to compare GNN architectures without edge attributes.
+  - `compare_models.py`: Script to compare different GNN architectures with edge attributes.
+  - `model_comparison_no_edges_README.md`: README for no-edge model comparisons.
+  - `model_comparison_README.md`: README for model comparisons with edges.
+  - `model_comparison_report.md`: Report on model comparisons.
+- `results/`: Directory containing the results from running the best model (e.g., LOOCV predictions, loss plots).
+- `visualizations/`: Directory containing visualizations generated during hyperparameter tuning.
+- `hpo_study.db`: Optuna study database for hyperparameter optimization.
+- `hyperparameter_tuning.py`: Script for hyperparameter tuning.
+- `mlp_comparison.py`: Script for MLP model comparison.
+- `best_model_README.md`: README for the best model results.
+- `log_best_model/`: Log files for the best model runs.
+- `best_model/`: Saved state dictionaries for the best model from each LOOCV fold.
+- `visualize_hpo_results.py`: Script to visualize hyperparameter optimization results.
 
 ## Model Architectures
 
@@ -37,64 +56,26 @@ This project demonstrates the use of Graph Neural Networks (GNNs) for predicting
 4. **GraphSAGEModel**: Graph SAmple and aggreGatE
 5. **ChebConvModel**: Chebyshev Spectral Graph Convolution
 
-## Running Model Comparisons
+## Reproducing Results
 
-### With Edge Attributes
+To reproduce the main results presented in the paper, you can use the `run_loocv.py` script. Ensure you have the necessary data in the `Data/` directory.
+
 ```bash
-python compare_models.py [options]
+python run_loocv.py [options]
 ```
 
-### Without Edge Attributes
-```bash
-python compare_models_no_edges.py [options]
-```
-
-Common options for both scripts:
-- `--stiffness-path`: Path to stiffness data directory
-- `--strain-path`: Path to strain data directory
+Options:
+- `--stiffness-path`: Path to stiffness data directory (default: `Data/Stiffness_Reduction/`)
+- `--strain-path`: Path to strain data directory (default: `Data/Strain/`)
 - `--batch-size`: Batch size for training
 - `--hidden-dim`: Hidden dimension for GNN models
 - `--num-gnn-layers`: Number of GNN layers
 - `--dropout`: Dropout probability
 - `--epochs`: Maximum number of epochs
 - `--patience`: Patience for early stopping
-- `--output-dir`: Directory to save results
+- `--output-dir`: Directory to save results (default: `results/`)
 
-## Running Best Models
-
-After running comparisons, run the best model(s) with:
-```bash
-python run_best_comparison_model.py [options]
-```
-
-Options:
-- `--model-type`: 'with_edges', 'no_edges', or 'both'
-- `--epochs`: Maximum number of epochs
-- `--patience`: Patience for early stopping
-- `--save-plots`: Save plots to files
-- `--output-dir`: Directory to save results
-
-## Package Documentation (gnn_utils)
-
-Key modules:
-- `data_preprocessing.py`: Data resampling and normalization
-- `model.py`: GNN model definitions
-- `training.py`: Training utilities
-- `graph_data.py`: Graph data preparation
-- `visualization.py`: Plotting functions
-
-## Interpreting Results
-
-Key metrics:
-- **MSE (Mean Squared Error)**: Lower is better
-- **RMSE (Root Mean Squared Error)**: Lower is better
-- **MAPE (Mean Absolute Percentage Error)**: Lower is better
-- **R²**: Higher is better
-
-Visualizations:
-- Scatter plots of true vs predicted values
-- Residual plots showing prediction errors
-- Time series plots with error bands
+The script will perform Leave-One-Out Cross-Validation using the best performing model identified in the comparison phase and save the predictions and evaluation metrics to the specified output directory.
 
 ## Dependencies
 
@@ -106,8 +87,27 @@ Visualizations:
 - Matplotlib
 - TensorBoardX
 - scienceplots (optional)
+- Optuna (for hyperparameter tuning, not required for reproducing main results)
 
-Install with:
+Install core dependencies with:
 ```bash
 pip install torch torch-geometric numpy pandas matplotlib tensorboardx
-pip install scienceplots  # Optional
+```
+Install optional dependencies:
+```bash
+pip install scienceplots optuna
+```
+
+## Interpreting Results
+
+The `results/` directory will contain `loocv_results.json` with key metrics (MSE, RMSE, MAPE, R²) and `loocv_predictions.png` visualizing the true vs predicted stiffness reduction. Loss plots for each fold will also be saved.
+
+## License
+
+[Add License Information Here]
+
+## Citation
+
+If you use this code in your research, please cite the accompanying paper:
+
+[Add Citation Information Here]
