@@ -18,18 +18,22 @@ This repository contains the code accompanying the scientific paper "[Paper Titl
 - `Data/`: Directory containing the input data used in the paper.
   - `Stiffness_Reduction/`: Stiffness reduction data.
   - `Strain/`: Strain sensor data.
-- `Comparison/`: This directory contains scripts and results from model comparisons and edge attribute analysis that were performed during the research phase. These are included for completeness but are not necessary to reproduce the main results presented in the paper.
+- `Comparison/`: This directory contains scripts, code, and results from model comparisons, edge attribute analysis, and MLP comparisons that were performed during the research phase. These are included for completeness but are not necessary to reproduce the main results presented in the paper.
   - `best_comparison_model/`: Results from running the best comparison models.
   - `edge_comparison/`: Results and analysis comparing models with and without edge attributes.
   - `model_comparison/`: Results from comparing different GNN architectures with edge attributes.
   - `model_comparison_no_edges/`: Results from comparing different GNN architectures without edge attributes.
+  - `mlp_models/`: Code and results for MLP comparisons.
   - `compare_edge_vs_no_edge.py`: Script to compare models with and without edge attributes.
   - `compare_models_fixed.py`: Script for fixed model comparisons.
   - `compare_models_no_edges.py`: Script to compare GNN architectures without edge attributes.
   - `compare_models.py`: Script to compare different GNN architectures with edge attributes.
+  - `mlp_comparison.py`: Script for MLP model comparison.
+  - `run_mlp_loocv.py`: Script to run LOOCV for MLP models.
   - `model_comparison_no_edges_README.md`: README for no-edge model comparisons.
   - `model_comparison_README.md`: README for model comparisons with edges.
   - `model_comparison_report.md`: Report on model comparisons.
+  - `mlp_model_report.md`: Report on MLP model comparison.
 - `results/`: Directory containing the results from running the best model (e.g., LOOCV predictions, loss plots).
 - `visualizations/`: Directory containing visualizations generated during hyperparameter tuning.
 - `hpo_study.db`: Optuna study database for hyperparameter optimization.
