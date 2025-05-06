@@ -1,6 +1,6 @@
-# Graph Neural Network for Stiffness Prediction - Code for Scientific Paper
+# Graph Neural Network for Stiffness and RUL Prediction - Code for Scientific Paper
 
-This repository contains the code accompanying the scientific paper "[Paper Title Here]" (link to paper once available), which explores the use of Graph Neural Networks (GNNs) for predicting stiffness reduction in materials based on strain sensor data.
+This repository contains the code accompanying the scientific paper "Graph Neural Networks for SHM: Exploiting Spatial Interdependencies of Strain Data" (link to paper once available), which explores the use of Graph Neural Networks (GNNs) for predicting stiffness reduction and remaining usefull life in composites structures undergone fatigue based on strain sensor data.
 
 ## Project Structure
 
