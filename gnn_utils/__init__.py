@@ -74,6 +74,8 @@ from gnn_utils.loocv import (
     plot_loocv_predictions
 )
 
+from gnn_utils.utils import calculate_cycles_from_timesteps
+
 __all__ = [
     # Data preprocessing
     'resample_stiffness_to_match_strain',
@@ -128,6 +130,7 @@ __all__ = [
     'identify_target_indexes',
     'truncate_data',
     'prepare_gnn_data',
+    'calculate_cycles_from_timesteps',
     
     # LOOCV
     'run_loocv_utility',
