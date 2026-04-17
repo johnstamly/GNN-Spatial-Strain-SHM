@@ -189,8 +189,7 @@ def run_loocv_for_model(model_name, strain_data_list, stiffness_data_list, speci
     
     # Add summary metrics
     serializable_results['summary'] = {
-        'mean_mse': float(mean_mse),
-        # Convert numpy.float32 to Python float
+        'mean_mse': float(mean_mse),  # Convert numpy.float32 to Python float
         'mean_rmse': float(mean_rmse),  # Convert numpy.float32 to Python float
         'mean_mape': float(mean_mape)  # Convert numpy.float32 to Python float
     }
@@ -203,8 +202,7 @@ def run_loocv_for_model(model_name, strain_data_list, stiffness_data_list, speci
         'model_name': model_name,
         'mean_mse': float(mean_mse),  # Convert numpy.float32 to Python float
         'mean_rmse': float(mean_rmse),  # Convert numpy.float32 to Python float
-        'mean_mape': float(mean_mape
-)  # Convert numpy.float32 to Python float
+        'mean_mape': float(mean_mape)  # Convert numpy.float32 to Python float
     }
 
 

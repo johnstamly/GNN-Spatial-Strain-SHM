@@ -1,0 +1,9 @@
+torch
+torch-geometric
+numpy
+pandas
+matplotlib
+tensorboardx
+# Optional
+scienceplots
+optuna
