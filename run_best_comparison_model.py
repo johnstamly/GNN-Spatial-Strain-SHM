@@ -89,7 +89,7 @@ def get_best_model_info(model_type):
     """Get information about the best model from comparison results."""
     if model_type == 'with_edges' or model_type == 'both':
         try:
-            with open('model_comparison/comparison_results.json') as f:
+            with open('Comparison/model_comparison/comparison_results.json') as f:
                 with_edges_results = json.load(f)
             best_with_edges = min(with_edges_results, key=lambda x: x['mean_mse'])
             print(f"\nBest model with edge attributes: {best_with_edges['model_name']}")
@@ -104,7 +104,7 @@ def get_best_model_info(model_type):
         
     if model_type == 'no_edges' or model_type == 'both':
         try:
-            with open('model_comparison_no_edges/comparison_results.json') as f:
+            with open('Comparison/model_comparison_no_edges/comparison_results.json') as f:
                 no_edges_results = json.load(f)
             best_no_edges = min(no_edges_results, key=lambda x: x['mean_mse'])
             print(f"\nBest model without edge attributes: {best_no_edges['model_name']}")

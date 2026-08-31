@@ -66,3 +66,26 @@ if __name__ == "__main__":
     print("  Params:")
     for key, value in trial.params.items():
         print(f"    {key}: {value}")
+
+    # Persist the best trial so run_loocv_best.py can pick it up.
+    # Without this file run_loocv_best.py exits immediately.
+    os.makedirs("results", exist_ok=True)
+    best_params_path = os.path.join("results", "best_params.json")
+    with open(best_params_path, "w") as f:
+        json.dump(
+            {
+                "value": trial.value,
+                "number": trial.number,
+                "params": {
+                    # Searched by Optuna
+                    **trial.params,
+                    # Held fixed during the study; recorded so the file is self-contained
+                    "num_nodes": 16,
+                    "epochs": 1000,
+                    "patience": 20,
+                },
+            },
+            f,
+            indent=4,
+        )
+    print(f"Best parameters written to {best_params_path}")

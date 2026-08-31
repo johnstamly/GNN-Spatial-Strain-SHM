@@ -4,7 +4,8 @@ Utilities for preparing graph data for the GNN model.
 
 import torch
 import numpy as np
-from torch_geometric.data import Data, DataLoader
+from torch_geometric.data import Data
+from torch_geometric.loader import DataLoader  # torch_geometric.data.DataLoader is deprecated
 
 
 def normalize_input(x, input_mean, input_std):

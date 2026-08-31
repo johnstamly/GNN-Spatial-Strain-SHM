@@ -61,8 +61,13 @@ def parse_args():
                         help='Patience for early stopping')
     parser.add_argument('--optimizer', type=str, default='adamw',
                         choices=['adam', 'adamw'], help='Optimizer type')
-    parser.add_argument('--weight-decay', type=float, default=0.01,
-                        help='Weight decay for optimizer')
+    parser.add_argument('--learning-rate', type=float, default=0.01,
+                        help='Learning rate for the optimizer')
+    parser.add_argument('--weight-decay', type=float, default=1e-6,
+                        help='Weight decay (L2) for the optimizer')
+    parser.add_argument('--seed', type=int, default=None,
+                        help='Random seed. Omitted by default, which reproduces '
+                             'the unseeded behaviour used for the published runs.')
     
     # Other parameters
     parser.add_argument('--drop-level', type=int, default=85,
@@ -73,6 +78,10 @@ def parse_args():
                         help='Save plots to files instead of displaying them')
     parser.add_argument('--output-dir', type=str, default='results',
                         help='Directory to save results and plots')
+    parser.add_argument('--model-dir', type=str, default='best_model',
+                        help='Directory for per-fold checkpoints. The default, '
+                             'best_model/, is version-controlled and holds the '
+                             'released checkpoints -- set this to keep them.')
     
     return parser.parse_args()
 
@@ -86,7 +95,7 @@ def main():
     setup_matplotlib_style()
     
     # Create directories if they don't exist
-    os.makedirs('best_model', exist_ok=True)
+    os.makedirs(args.model_dir, exist_ok=True)
     os.makedirs('log', exist_ok=True)
     if args.save_plots:
         os.makedirs(args.output_dir, exist_ok=True)
@@ -130,7 +139,13 @@ def main():
         patience=args.patience,
         visualize=not args.no_visualize and not args.save_plots,
         save_plots=args.save_plots,
-        output_dir=args.output_dir
+        output_dir=args.output_dir,
+        learning_rate=args.learning_rate,
+        weight_decay=args.weight_decay,
+        optimizer_name=args.optimizer,
+        genconv_aggr=args.genconv_aggr,
+        seed=args.seed,
+        model_dir=args.model_dir
     )
     
     # Summarize results
