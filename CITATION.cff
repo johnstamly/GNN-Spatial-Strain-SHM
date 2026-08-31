@@ -26,6 +26,14 @@ authors:
     affiliation: "Applied Mechanics Laboratory (AML), Department of Mechanical Engineering and Aeronautics, University of Patras, Greece"
 license: MIT
 repository-code: "https://github.com/johnstamly/GNN-Spatial-Strain-SHM"
+doi: "10.5281/zenodo.22207656"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.22207656"
+    description: "Concept DOI - always resolves to the latest archived release"
+  - type: doi
+    value: "10.1177/14759217251386802"
+    description: "The accompanying journal article"
 keywords:
   - graph neural networks
   - structural health monitoring

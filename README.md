@@ -1,6 +1,7 @@
 # Graph Neural Networks for SHM: Exploiting Spatial Interdependencies of Strain Data
 
 [![DOI](https://img.shields.io/badge/DOI-10.1177%2F14759217251386802-blue.svg)](https://doi.org/10.1177/14759217251386802)
+[![Code DOI](https://img.shields.io/badge/Code%20DOI-10.5281%2Fzenodo.22207656-blue.svg)](https://doi.org/10.5281/zenodo.22207656)
 [![Data DOI](https://img.shields.io/badge/Data%20DOI-10.5281%2Fzenodo.14627730-blue.svg)](https://doi.org/10.5281/zenodo.14627730)
 [![License: MIT](https://img.shields.io/badge/Code%20License-MIT-green.svg)](LICENSE)
 [![Data License: CC BY 4.0](https://img.shields.io/badge/Data%20License-CC%20BY%204.0-green.svg)](Data/LICENSE)
@@ -262,6 +263,13 @@ BibTeX entry above and [`CITATION.cff`](CITATION.cff).
 
 Machine-readable metadata is in [`CITATION.cff`](CITATION.cff) — GitHub renders
 it as a "Cite this repository" button.
+
+**Citing the software itself.** Each release is archived on Zenodo under the
+concept DOI [10.5281/zenodo.22207656](https://doi.org/10.5281/zenodo.22207656),
+which always resolves to the most recent version. The paper's own data and code
+availability statement cites the GitHub URL; the Zenodo DOI is an additional,
+permanent archival citation, not a replacement for it. To cite one exact
+release, use that release's own version DOI from the Zenodo record.
 
 If you use the measurements, please also cite the Zenodo dataset (see
 [`Data/README.md`](Data/README.md)).
