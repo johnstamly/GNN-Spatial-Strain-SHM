@@ -1,0 +1,28 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+The datasets in this directory are licensed under CC BY 4.0.
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+
+You are free to share and adapt the material for any purpose, including
+commercially, provided you give appropriate credit, provide a link to the
+license, and indicate if changes were made.
+
+Required attribution
+--------------------
+These data are derived from:
+
+  Paunikar S, Galanopoulos G, Rebillat M.
+  "An experimental data set for the SHM of a substructure of an engine fan
+  blade from the MORPHO project." Zenodo, 2025.
+  https://doi.org/10.5281/zenodo.14627730
+
+Changes made: the raw acquisitions have been converted to HDF5/CSV, restricted
+to the strain and MTS-stiffness channels, and organised per panel (FOD3-FOD7).
+
+The data were produced within the H2020 MORPHO project, grant agreement
+No 101006854.
+
+NOTE: This license applies to the contents of the Data/ directory only.
+The source code in this repository is licensed under the MIT License; see the
+LICENSE file at the repository root.

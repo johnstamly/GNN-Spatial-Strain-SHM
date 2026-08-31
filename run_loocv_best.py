@@ -34,14 +34,20 @@ def parse_args():
                         help='Path to stiffness data directory')
     parser.add_argument('--strain-path', type=str, default='Data/Strain',
                         help='Path to strain data directory')
-    parser.add_argument('--drop-level', type=int, default=85,
-                        help='Stiffness reduction level for truncation')
+    parser.add_argument('--drop-level', type=int, default=85, choices=[99, 95, 90, 85],
+                        help='Key naming the truncation point, not a percentage: '
+                             '85 truncates at ~70%% of initial stiffness, the level '
+                             'used for the published results. See Data/README.md.')
     parser.add_argument('--no-visualize', action='store_true',
                         help='Disable visualization')
     parser.add_argument('--save-plots', action='store_true',
                         help='Save plots to files instead of displaying them')
     parser.add_argument('--output-dir', type=str, default='results',
                         help='Directory to save results and plots')
+    parser.add_argument('--model-dir', type=str, default='best_model',
+                        help='Directory for per-fold checkpoints. The default, '
+                             'best_model/, is version-controlled and holds the '
+                             'released checkpoints -- set this to keep them.')
     
     return parser.parse_args()
 
@@ -72,7 +78,7 @@ def main():
     setup_matplotlib_style()
     
     # Create directories
-    os.makedirs('best_model', exist_ok=True)
+    os.makedirs(args.model_dir, exist_ok=True)
     os.makedirs('log', exist_ok=True)
     if args.save_plots:
         os.makedirs(args.output_dir, exist_ok=True)
@@ -112,7 +118,8 @@ def main():
         patience=optimized_params['patience'],
         visualize=not args.no_visualize and not args.save_plots,
         save_plots=args.save_plots,
-        output_dir=args.output_dir
+        output_dir=args.output_dir,
+        model_dir=args.model_dir
     )
     
     # Summarize and save results

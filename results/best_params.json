@@ -1,0 +1,14 @@
+{
+    "value": 2.699277400970459,
+    "number": 167,
+    "source": "hpo_study.db, best of 408 completed Optuna trials",
+    "params": {
+        "num_gnn_layers": 3,
+        "hidden_dim": 64,
+        "dropout": 0.30666031788297343,
+        "batch_size": 64,
+        "num_nodes": 16,
+        "epochs": 1000,
+        "patience": 20
+    }
+}

@@ -1,0 +1,62 @@
+cff-version: 1.2.0
+message: "If you use this software or the accompanying data, please cite the paper below."
+title: "GNN-Spatial-Strain-SHM: Graph Neural Networks for strain-based SHM of composite panels"
+abstract: >-
+  Code accompanying "Graph neural networks for SHM: exploiting spatial
+  interdependencies of strain data for diagnostics and prognostics".
+  Implements the GENEA (GENConv with Edge Attributes) model, the
+  load-decoupled Health Indicator, and the Leave-One-Panel-Out
+  cross-validation protocol used in the paper.
+type: software
+authors:
+  - family-names: Stamatelatos
+    given-names: Giannis
+    orcid: "https://orcid.org/0009-0009-3560-6639"
+    affiliation: "Applied Mechanics Laboratory (AML), Department of Mechanical Engineering and Aeronautics, University of Patras, Greece"
+    email: johnstamly@gmail.com
+  - family-names: Galanopoulos
+    given-names: Georgios
+    orcid: "https://orcid.org/0000-0003-4998-1308"
+    affiliation: "Structural Integrity and Composites Group, Faculty of Aerospace Engineering, Delft University of Technology, The Netherlands"
+  - family-names: Zarouchas
+    given-names: Dimitrios
+    affiliation: "Center of Excellence in Artificial Intelligence for Structures, Faculty of Aerospace Engineering, Delft University of Technology, The Netherlands"
+  - family-names: Loutas
+    given-names: Theodoros
+    affiliation: "Applied Mechanics Laboratory (AML), Department of Mechanical Engineering and Aeronautics, University of Patras, Greece"
+license: MIT
+repository-code: "https://github.com/johnstamly/GNN-Spatial-Strain-SHM"
+keywords:
+  - graph neural networks
+  - structural health monitoring
+  - composite structures
+  - strain
+  - remaining useful life
+  - health indicator
+  - uncertainty quantification
+
+# NOTE: the article is currently SAGE OnlineFirst, so it has an article number
+# but no volume/issue/page range yet. Once an issue is assigned, add
+# `volume:`, `issue:` and `start:`/`end:` here and in the BibTeX entry in README.md.
+preferred-citation:
+  type: article
+  title: "Graph neural networks for SHM: exploiting spatial interdependencies of strain data for diagnostics and prognostics"
+  authors:
+    - family-names: Stamatelatos
+      given-names: Giannis
+      orcid: "https://orcid.org/0009-0009-3560-6639"
+    - family-names: Galanopoulos
+      given-names: Georgios
+      orcid: "https://orcid.org/0000-0003-4998-1308"
+    - family-names: Zarouchas
+      given-names: Dimitrios
+    - family-names: Loutas
+      given-names: Theodoros
+  journal: "Structural Health Monitoring"
+  publisher:
+    name: "SAGE Publications"
+  year: 2025
+  month: 11
+  doi: "10.1177/14759217251386802"
+  issn: "1475-9217"
+  notes: "Advance online publication (OnlineFirst); article number 14759217251386802"

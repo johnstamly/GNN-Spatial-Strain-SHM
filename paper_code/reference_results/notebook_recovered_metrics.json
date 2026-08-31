@@ -1,0 +1,22 @@
+{
+    "note": "Metrics recovered from the execution outputs of the notebooks in paper_code/notebooks/ before those outputs were stripped for size. Each notebook stored a SINGLE hand-selected fold, not a full CV run.",
+    "mlp_baseline_stiffness.ipynb": {
+        "fold": "df1 (FOD4)",
+        "MSE": 27.35,
+        "RMSE": 5.23,
+        "MAPE": 4.23,
+        "paper_table10_MLP_FOD4": {
+            "RMSE": 4.75,
+            "MAPE": 3.71
+        },
+        "comment": "Same pipeline, different unseeded run. The gap is consistent with the run-to-run spread seen elsewhere in this repository."
+    },
+    "rul_prototype_gcnconv.ipynb": {
+        "fold": "df4 (FOD7)",
+        "MAE": 58.81,
+        "RMSE": 70.07,
+        "MAPE": 16.94,
+        "truncation": "drop = 0.99",
+        "comment": "Does NOT correspond to the published RUL results. The paper reports RUL RMSE in the 100-400 cycle range and states that RUL uses the GENEA architecture; this notebook uses two GCNConv layers with edge_attr set to all zeros, i.e. no edge attributes."
+    }
+}

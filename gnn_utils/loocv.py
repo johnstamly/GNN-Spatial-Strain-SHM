@@ -30,7 +30,13 @@ def run_loocv_utility(strain_data: List[np.ndarray],
               visualize: bool = True,
                model_class = None,
               save_plots: bool = False,
-              output_dir: str = "results") -> Dict[str, Dict[str, Any]]:
+              output_dir: str = "results",
+              learning_rate: float = 0.01,
+              weight_decay: float = 1e-6,
+              optimizer_name: str = 'adamw',
+              genconv_aggr: str = 'add',
+              seed: Optional[int] = None,
+              model_dir: str = "best_model") -> Dict[str, Dict[str, Any]]:
     """
     Run Leave-One-Out Cross-Validation (LOOCV) for the GNN model.
     
@@ -49,12 +55,31 @@ def run_loocv_utility(strain_data: List[np.ndarray],
         visualize: Whether to visualize training progress
         save_plots: Whether to save plots to files instead of displaying them
         output_dir: Directory to save plots if save_plots is True
+        learning_rate: Learning rate for the optimizer
+        weight_decay: Weight decay (L2) for the optimizer
+        optimizer_name: 'adamw' or 'adam'
+        genconv_aggr: GENConv aggregation ('add', 'mean' or 'max'); only applied
+            to the default EdgeAttrGNN, not to a caller-supplied model_class
+        seed: If given, seeds Python/NumPy/torch RNGs for repeatable runs.
+            Defaults to None, i.e. unseeded, which is how the published runs
+            were produced.
+        model_dir: Where per-fold checkpoints are written. Defaults to
+            'best_model', which is version-controlled and holds the released
+            checkpoints -- point this elsewhere to avoid overwriting them.
         
     Returns:
         Dictionary of results for each fold
     """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
+
+    if seed is not None:
+        import random
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        print(f"Seeded RNGs with {seed}")
     
     # Create output directory if saving plots
     if save_plots:
@@ -113,7 +138,8 @@ def run_loocv_utility(strain_data: List[np.ndarray],
                 hidden_dim=hidden_dim,
                 output_dim=1,         # Predicting a single stiffness value
                 num_gnn_layers=num_gnn_layers,
-                dropout_p=dropout_p
+                dropout_p=dropout_p,
+                genconv_aggr=genconv_aggr
             )
         else:
             # Use the provided model class or function
@@ -124,7 +150,8 @@ def run_loocv_utility(strain_data: List[np.ndarray],
         model = model.to(device)
         
         # Optimizer and Scheduler
-        optimizer = optim.AdamW(model.parameters(), lr=0.01, weight_decay=1e-6)
+        optimizer_cls = optim.Adam if optimizer_name.lower() == 'adam' else optim.AdamW
+        optimizer = optimizer_cls(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.8, patience=10)
         
         # Data Loaders
@@ -137,7 +164,8 @@ def run_loocv_utility(strain_data: List[np.ndarray],
         
         # Train model
         print(f"\nTraining model for fold {val_idx+1}/{len(specimen_keys)}...")
-        model_save_path = f"best_model/fold_{val_idx+1}_{val_key}_model_state.pth"
+        model_save_path = os.path.join(
+            model_dir, f"fold_{val_idx+1}_{val_key}_model_state.pth")
         model, train_losses, val_losses = run_training(
             model, train_loader, val_loader, device, writer,  optimizer, scheduler,
             epochs=epochs, patience=patience, model_save_path=model_save_path
@@ -243,6 +271,17 @@ def plot_loocv_predictions(loocv_results: Dict[str, Dict[str, Any]],
         loocv_results: Dictionary of LOOCV results
         save_plots: Whether to save plots to files instead of displaying them
         output_dir: Directory to save plots if save_plots is True
+        learning_rate: Learning rate for the optimizer
+        weight_decay: Weight decay (L2) for the optimizer
+        optimizer_name: 'adamw' or 'adam'
+        genconv_aggr: GENConv aggregation ('add', 'mean' or 'max'); only applied
+            to the default EdgeAttrGNN, not to a caller-supplied model_class
+        seed: If given, seeds Python/NumPy/torch RNGs for repeatable runs.
+            Defaults to None, i.e. unseeded, which is how the published runs
+            were produced.
+        model_dir: Where per-fold checkpoints are written. Defaults to
+            'best_model', which is version-controlled and holds the released
+            checkpoints -- point this elsewhere to avoid overwriting them.
         cycles_dict: Optional dictionary mapping keys to cycle values for x-axis
     """
     if save_plots:

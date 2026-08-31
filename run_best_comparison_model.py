@@ -58,8 +58,10 @@ def parse_args():
                         help='Path to stiffness data directory')
     parser.add_argument('--strain-path', type=str, default='Data/Strain',
                         help='Path to strain data directory')
-    parser.add_argument('--drop-level', type=int, default=85,
-                        help='Stiffness reduction level for truncation')
+    parser.add_argument('--drop-level', type=int, default=85, choices=[99, 95, 90, 85],
+                        help='Key naming the truncation point, not a percentage: '
+                             '85 truncates at ~70%% of initial stiffness, the level '
+                             'used for the published results. See Data/README.md.')
     
     # Model selection
     parser.add_argument('--model-type', type=str, default='with_edges',
@@ -89,7 +91,7 @@ def get_best_model_info(model_type):
     """Get information about the best model from comparison results."""
     if model_type == 'with_edges' or model_type == 'both':
         try:
-            with open('model_comparison/comparison_results.json') as f:
+            with open('Comparison/model_comparison/comparison_results.json') as f:
                 with_edges_results = json.load(f)
             best_with_edges = min(with_edges_results, key=lambda x: x['mean_mse'])
             print(f"\nBest model with edge attributes: {best_with_edges['model_name']}")
@@ -104,7 +106,7 @@ def get_best_model_info(model_type):
         
     if model_type == 'no_edges' or model_type == 'both':
         try:
-            with open('model_comparison_no_edges/comparison_results.json') as f:
+            with open('Comparison/model_comparison_no_edges/comparison_results.json') as f:
                 no_edges_results = json.load(f)
             best_no_edges = min(no_edges_results, key=lambda x: x['mean_mse'])
             print(f"\nBest model without edge attributes: {best_no_edges['model_name']}")
@@ -266,6 +268,7 @@ def run_best_model(model_name, use_edge_attr, strain_data_list, stiffness_data_l
         visualize=not args.no_visualize and not args.save_plots,
         save_plots=args.save_plots,
         output_dir=output_dir,
+        model_dir=os.path.join(output_dir, 'checkpoints'),
         model_class=model_creator
     )
     

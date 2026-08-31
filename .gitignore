@@ -1,15 +1,18 @@
-# Python
+# Byte-compiled / cache
 __pycache__/
 *.py[cod]
 *.pyd
 *.pyo
+*$py.class
 
 # Jupyter
 .ipynb_checkpoints/
 
-# Databases
-*.db
-*.sqlite3
+# Virtual environments
+.env
+venv/
+.venv/
+env/
 
 # Distribution / packaging
 *.egg-info/
@@ -17,18 +20,26 @@ dist/
 build/
 .eggs/
 
-# OS
+# TensorBoard runs (regenerated on every training run)
+log/*/
+!log/.gitkeep
+
+# Outputs produced by re-running the scripts.
+# The reference outputs that accompany the paper are tracked explicitly
+# under paper_code/reference_results/ and paper_code/trained_models/.
+output_images/
+
+# Local databases. hpo_study.db is a deliberate research artifact of the
+# published work and stays tracked -- see README.
+*.db
+*.sqlite3
+!hpo_study.db
+
+*.log
+
+# OS / editor cruft
 .DS_Store
 Thumbs.db
-
-# Environment
-.env
-.venv/
-venv/
-
-# PyTorch model checkpoints (large binaries — store separately if needed)
-# Uncomment the line below to exclude model weights from version control:
-# *.pth
-
-# Optuna / HPO
-*.log
+.vscode/
+.idea/
+*.swp
