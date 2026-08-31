@@ -30,7 +30,7 @@ VS Code or Jupyter (via jupytext).
 | `genea_stiffness_lopo.py` | LOPO CV, GENEA, stiffness estimation | Main stiffness results; GENEA column of the baseline comparison |
 | `genea_stiffness_lopo_with_fod3.py` | Five-fold LOPO **including** the 6-sensor FOD3 panel, plus MC-dropout uncertainty | "Generalization to varying geometries: incorporating FOD3"; MC-dropout confidence bands |
 | `cnn_baseline_lopo.py` | LOPO CV, 2-D CNN baseline (16 HI values reshaped to a 4×4 grid) | CNN baseline in the MLP/CNN comparison |
-| `mlp_baseline_lopo.py` | Four-fold LOPO, flat MLP over the 16 HI values, plus a `use_hi` toggle | MLP baseline in the MLP/CNN comparison; the with/without-HI ablation |
+| `mlp_baseline_lopo.py` | Four-fold LOPO, flat MLP over the 16 HI values, plus a `use_hi` toggle | MLP baseline in the MLP/CNN comparison (the toggle approximates, but does not reproduce, the HI ablation — see below) |
 | `threshold_search/threshold_search.py` | Four-fold LOPO repeated at truncation thresholds 85 / 80 / 70 / 60 % | Truncation-threshold selection table |
 
 Reference outputs from the actual runs are kept alongside:
@@ -101,14 +101,17 @@ reproducible four-fold protocol required real changes:
 * The fold loop is new. The notebook kept `model`, `opt` and `scheduler` at
   module level, so a naive loop would have carried each fold's trained weights
   into the next. All three are rebuilt inside the loop.
-* The preprocessing block is spliced **verbatim** from
-  `genea_stiffness_lopo.py`, so the HI features and the 70 % truncation are
-  byte-identical to the GENEA runs.
+* The preprocessing block is spliced from `genea_stiffness_lopo.py` with
+  exactly one change: the HI step is wrapped in `if CONFIG["use_hi"]`, with an
+  `else` branch that drops the first sample so the lengths still line up. At
+  the default `use_hi=True` the HI features and the 70 % truncation are
+  identical to the GENEA runs.
 * Checkpoints go to `output_images/MLP_4fold/`. The notebook wrote to
   `best_model/best_model_state.pth`, which in this repository is the tracked
   directory holding released checkpoints.
 * `CONFIG["use_hi"]` was added: `False` skips the cumulative-absolute-derivative
-  step and feeds smoothed strain instead. That is the with/without-HI ablation.
+  step and feeds smoothed strain instead. This approximates the with/without-HI
+  ablation but does not reproduce its published numbers — see below.
 
 Everything model-side is the notebook's, including three choices that differ
 from the GENEA scripts and were kept deliberately:
@@ -140,8 +143,40 @@ Per-fold ordering and magnitudes track the published table throughout. The full
 output is in `reference_results/mlp_4fold_results.json`. Nothing is seeded, so
 your run will differ again by a similar margin.
 
-The no-HI ablation has **not** been verified against the paper's ablation
-numbers; the toggle reproduces the experiment, not a checked result.
+The paper quotes the MLP twice from what appear to be separate runs — 3.27 /
+2.38 in the MLP/CNN comparison table, and 3.14 / 2.39 as the "with the proposed
+HI" row of the ablation table. The 2.96 / 2.46 above sits just below both.
+
+### The `use_hi` toggle does *not* reproduce the ablation
+
+This was run and checked, and it does not come out where the paper does:
+
+| | RMSE | MAPE (%) |
+|---|---|---|
+| with HI, here | 2.96 | 2.46 |
+| with HI, paper | 3.14 | 2.39 |
+| **without HI, here** | **3.08** | **2.52** |
+| **without HI, paper** | **5.34** | **4.25** |
+
+Removing the HI degrades this pipeline by about 4 % RMSE. The paper reports
+roughly 70 %. Matching the with-HI row while missing the without-HI row by that
+margin says the difference is in how the no-HI input was constructed, not in the
+model or the protocol.
+
+`CONFIG["use_hi"] = False` skips the cumulative-absolute-derivative step and
+feeds the resampled, rolling-mean-smoothed strain instead, which is the most
+literal reading of "without HI (strain)". Per-feature standardisation then
+removes the scale difference between the two representations, and what remains
+still carries enough of the degradation signal for this small MLP.
+
+So: **treat the toggle as an approximation of the ablation, not a reproduction
+of it.** The paper's no-HI input was evidently prepared some other way — for
+instance without the 200 s resampling or the rolling mean, or normalised
+globally rather than per feature. `MLP_raw_strain_Stiffness_v1.ipynb` on the
+authors' machine is named for the raw-strain run but its preprocessing cell
+still computes the HI, so the configuration behind the 5.34 is not recorded
+anywhere we could find. Output is in
+`reference_results/mlp_4fold_no_hi_results.json`.
 
 ## `notebooks/` — the original notebooks, outputs stripped
 

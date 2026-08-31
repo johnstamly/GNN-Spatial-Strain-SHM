@@ -151,7 +151,6 @@ essentials:
 | Generalisation to the 6-sensor FOD3 panel + MC-dropout uncertainty | `python paper_code/genea_stiffness_lopo_with_fod3.py` |
 | CNN baseline | `python paper_code/cnn_baseline_lopo.py` |
 | MLP baseline | `python paper_code/mlp_baseline_lopo.py` |
-| With/without-HI ablation | `python paper_code/mlp_baseline_lopo.py` with `CONFIG["use_hi"] = False` |
 | Truncation-threshold selection | `python paper_code/threshold_search/threshold_search.py` |
 | GNN architecture comparison (with / without edge attributes) | `python Comparison/compare_models.py`, `python Comparison/compare_models_no_edges.py` |
 
@@ -177,6 +176,13 @@ Three things to know before you run anything:
 `Comparison/run_mlp_loocv.py` also runs an MLP, but it is the **exploratory
 phase** MLP, not the paper's baseline. Use `paper_code/mlp_baseline_lopo.py`
 for the reported comparison, and `Comparison/` for the architecture study.
+
+`mlp_baseline_lopo.py` also carries a `CONFIG["use_hi"]` toggle for the
+with/without-HI ablation. It reproduces the paper's *with*-HI numbers closely
+but **not** the without-HI ones (3.08 RMSE here against the paper's 5.34), so
+the no-HI input must have been prepared differently. It is documented as an
+approximation of that ablation, not a reproduction of it — see
+[`paper_code/README.md`](paper_code/README.md).
 
 ### Not included in this repository
 

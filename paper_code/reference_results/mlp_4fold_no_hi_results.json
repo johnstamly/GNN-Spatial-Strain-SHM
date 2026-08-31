@@ -1,0 +1,55 @@
+{
+    "config": {
+        "stiffness_drop_threshold": 70,
+        "use_hi": false,
+        "input_dim": 16,
+        "output_dim": 1,
+        "width": 16,
+        "depth": 3,
+        "dropout_p": 0.2,
+        "learning_rate": 0.01,
+        "weight_decay": 0.001,
+        "epochs": 1000,
+        "patience": 80,
+        "batch_size": 128,
+        "use_weighted_loss": true,
+        "weight_range": [
+            0.0,
+            0.8
+        ],
+        "weight_value": 6.0,
+        "mc_dropout_samples": 100
+    },
+    "mean_metrics": {
+        "MSE": 10.85532883507259,
+        "RMSE": 3.0776512611363644,
+        "MAPE": 2.5158023447435247
+    },
+    "std_dev_metrics": {
+        "MSE": 8.037645339750254,
+        "RMSE": 1.1761766661085977,
+        "MAPE": 1.0542938594955211
+    },
+    "per_fold_metrics": {
+        "df1": {
+            "MSE": 23.93858828115828,
+            "RMSE": 4.892707663570171,
+            "MAPE": 4.036581150878061
+        },
+        "df2": {
+            "MSE": 3.1966402493012924,
+            "RMSE": 1.787915056511716,
+            "MAPE": 1.2495267873347178
+        },
+        "df3": {
+            "MSE": 10.776937606827822,
+            "RMSE": 3.2828246384520483,
+            "MAPE": 2.887316322840823
+        },
+        "df4": {
+            "MSE": 5.50914920300296,
+            "RMSE": 2.3471576860115215,
+            "MAPE": 1.8897851179204956
+        }
+    }
+}

@@ -9,14 +9,17 @@
 # execution with the fold chosen by hand. Here that is a loop over the four
 # 16-sensor panels, with the model, optimizer and scheduler rebuilt inside the
 # loop so folds cannot leak weights into each other. The preprocessing block is
-# spliced verbatim from `genea_stiffness_lopo.py`, so the HI features and the
-# 70% truncation are byte-identical to the GENEA runs.
+# spliced from `genea_stiffness_lopo.py` with exactly one change: the HI step is
+# wrapped in `if CONFIG["use_hi"]`. At the default True, the HI features and the
+# 70% truncation are identical to the GENEA runs.
 #
 # Everything model-side follows the notebook rather than the GENEA scripts, and
 # they genuinely differ -- see the caveat table in paper_code/README.md.
 #
-# Set CONFIG["use_hi"] = False for the ablation that feeds raw smoothed strain
-# instead of the HI.
+# CONFIG["use_hi"] = False feeds resampled, smoothed strain instead of the HI.
+# That approximates the paper's with/without-HI ablation but does not reproduce
+# it: measured here it costs ~4% RMSE, where the paper reports ~70%. See the
+# "use_hi toggle" section of paper_code/README.md before relying on it.
 #
 # Run from the repository root:  python paper_code/mlp_baseline_lopo.py
 
