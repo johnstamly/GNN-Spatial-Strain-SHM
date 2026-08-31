@@ -1,9 +1,11 @@
 # `paper_code/` — the scripts that produced the published results
 
-These are the scripts used for the results reported in the published paper.
-They are included **verbatim**, exactly as they were run, so that the record is
-faithful. They are standalone: they do *not* import `gnn_utils/`, and each one
-re-implements loading, preprocessing, the model and the cross-validation loop.
+These are the scripts used for the results reported in the published paper. All
+but one are included **verbatim**, exactly as they were run, so that the record
+is faithful; the exception is `mlp_baseline_lopo.py`, which was assembled from a
+notebook and is documented as such below. They are standalone: they do *not*
+import `gnn_utils/`, and each one re-implements loading, preprocessing, the
+model and the cross-validation loop.
 
 > **Read this before anything else:** the code at the repository root
 > (`run_loocv.py`, `gnn_utils/`) is the earlier exploratory implementation used
@@ -28,6 +30,7 @@ VS Code or Jupyter (via jupytext).
 | `genea_stiffness_lopo.py` | LOPO CV, GENEA, stiffness estimation | Main stiffness results; GENEA column of the baseline comparison |
 | `genea_stiffness_lopo_with_fod3.py` | Five-fold LOPO **including** the 6-sensor FOD3 panel, plus MC-dropout uncertainty | "Generalization to varying geometries: incorporating FOD3"; MC-dropout confidence bands |
 | `cnn_baseline_lopo.py` | LOPO CV, 2-D CNN baseline (16 HI values reshaped to a 4×4 grid) | CNN baseline in the MLP/CNN comparison |
+| `mlp_baseline_lopo.py` | Four-fold LOPO, flat MLP over the 16 HI values, plus a `use_hi` toggle | MLP baseline in the MLP/CNN comparison; the with/without-HI ablation |
 | `threshold_search/threshold_search.py` | Four-fold LOPO repeated at truncation thresholds 85 / 80 / 70 / 60 % | Truncation-threshold selection table |
 
 Reference outputs from the actual runs are kept alongside:
@@ -35,6 +38,8 @@ Reference outputs from the actual runs are kept alongside:
 * `reference_results/genea_4fold_results.json`
 * `reference_results/genea_5fold_with_fod3_results.json`
 * `reference_results/threshold_search_results.json`
+* `reference_results/mlp_4fold_results.json`
+* `reference_results/notebook_recovered_metrics.json`
 * `trained_models/genea_4fold/*.pth` — four checkpoints, folds FOD4–FOD7
 * `trained_models/genea_5fold_with_fod3/*.pth` — three checkpoints, folds FOD5–FOD7
 
@@ -85,6 +90,83 @@ to end (with `epochs` cut to 1) to confirm they complete.
 Note in particular that `cnn_baseline_lopo.py` as originally saved could not
 complete a single fold on torch 2.x. If you are comparing against the paper's
 CNN numbers, they came from a run predating those edits.
+
+## The MLP baseline — assembled, not verbatim
+
+`mlp_baseline_lopo.py` is the one script here that was not simply copied. Its
+source is `notebooks/mlp_baseline_stiffness.ipynb`, which ran **one fold per
+execution** with the fold chosen by editing a cell. Turning that into a
+reproducible four-fold protocol required real changes:
+
+* The fold loop is new. The notebook kept `model`, `opt` and `scheduler` at
+  module level, so a naive loop would have carried each fold's trained weights
+  into the next. All three are rebuilt inside the loop.
+* The preprocessing block is spliced **verbatim** from
+  `genea_stiffness_lopo.py`, so the HI features and the 70 % truncation are
+  byte-identical to the GENEA runs.
+* Checkpoints go to `output_images/MLP_4fold/`. The notebook wrote to
+  `best_model/best_model_state.pth`, which in this repository is the tracked
+  directory holding released checkpoints.
+* `CONFIG["use_hi"]` was added: `False` skips the cumulative-absolute-derivative
+  step and feeds smoothed strain instead. That is the with/without-HI ablation.
+
+Everything model-side is the notebook's, including three choices that differ
+from the GENEA scripts and were kept deliberately:
+
+| | `mlp_baseline_lopo.py` | GENEA scripts |
+|---|---|---|
+| input normalisation | per-feature (`axis=0`) standardisation | one global scalar mean/std |
+| weighted loss | range `(0.0, 0.80)`, weight ×6.0 | range `(0.2, 0.95)`, weight ×2.0 |
+| LR scheduler steps on | **training** loss | validation loss |
+| early-stopping patience | 80 | 100 |
+| best-model tracking | skips the first 3 epochs | from epoch 0 |
+
+The weighted-loss values are taken from the notebook's *call site*, not the
+function's defaults — the defaults were never the values actually used.
+
+### Does it reproduce the paper?
+
+Yes, as closely as an unseeded pipeline can. A full run of this script gives:
+
+| Test panel | RMSE here | RMSE in paper | MAPE here | MAPE in paper |
+|---|---|---|---|---|
+| FOD4 | 4.51 | 4.75 | 3.35 | 3.71 |
+| FOD5 | 4.46 | 5.41 | 3.98 | 3.85 |
+| FOD6 | 1.75 | 1.76 | 1.68 | 1.09 |
+| FOD7 | 1.10 | 1.17 | 0.82 | 0.89 |
+| **Mean** | **2.96** | **3.27** | **2.46** | **2.38** |
+
+Per-fold ordering and magnitudes track the published table throughout. The full
+output is in `reference_results/mlp_4fold_results.json`. Nothing is seeded, so
+your run will differ again by a similar margin.
+
+The no-HI ablation has **not** been verified against the paper's ablation
+numbers; the toggle reproduces the experiment, not a checked result.
+
+## `notebooks/` — the original notebooks, outputs stripped
+
+Two notebooks are included as the underlying record. Execution outputs were
+removed (4.8 MB → 44 kB and 19 MB → 62 kB); the metrics that lived only in those
+outputs were extracted first into
+`reference_results/notebook_recovered_metrics.json`.
+
+* **`mlp_baseline_stiffness.ipynb`** — the source of `mlp_baseline_lopo.py`.
+  Its stored run was fold df1 (FOD4): RMSE 5.23, MAPE 4.23, against the paper's
+  4.75 / 3.71 for that panel. Use the script; this is here for provenance.
+
+* **`rul_prototype_gcnconv.ipynb`** — a RUL prototype, and **not** the code
+  behind the paper's RUL results. Two independent reasons:
+
+  1. It uses two `GCNConv` layers with `edge_attr` set to all zeros. The paper
+     states RUL uses "separate models, sharing this GENEA architecture" — this
+     model discards the edge attributes that are the paper's central claim.
+  2. Its stored fold (FOD7) gives RMSE 70 cycles at a 99 % truncation, while
+     the paper reports RUL RMSE "typically ranging from 100 to 400 cycles".
+
+  The code that produced the published RUL figures could not be located. The
+  paper's RUL figure filenames encode a weighted loss of range `(0, 0.03)` at
+  ×6, a configuration that appears in no surviving script. Treat this notebook
+  as an early prototype only.
 
 ## Selecting four-fold vs five-fold — a manual step
 

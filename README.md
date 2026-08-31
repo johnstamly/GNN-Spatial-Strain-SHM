@@ -99,7 +99,9 @@ paper_code/          ← the scripts that produced the published results  ★ st
   genea_stiffness_lopo.py             GENEA, LOPO CV, stiffness estimation
   genea_stiffness_lopo_with_fod3.py   five-fold LOPO incl. 6-sensor FOD3 + MC dropout
   cnn_baseline_lopo.py                2-D CNN baseline (HI reshaped to a 4×4 grid)
+  mlp_baseline_lopo.py                MLP baseline + with/without-HI ablation toggle
   threshold_search/                   truncation-threshold sweep (85/80/70/60 %)
+  notebooks/                          original notebooks, outputs stripped
   reference_results/                  metrics JSON from the actual paper runs
   trained_models/                     per-fold checkpoints from the paper runs
   README.md                           architecture, config, reproducibility caveats
@@ -148,6 +150,8 @@ essentials:
 | Stiffness estimation, GENEA | `python paper_code/genea_stiffness_lopo.py` |
 | Generalisation to the 6-sensor FOD3 panel + MC-dropout uncertainty | `python paper_code/genea_stiffness_lopo_with_fod3.py` |
 | CNN baseline | `python paper_code/cnn_baseline_lopo.py` |
+| MLP baseline | `python paper_code/mlp_baseline_lopo.py` |
+| With/without-HI ablation | `python paper_code/mlp_baseline_lopo.py` with `CONFIG["use_hi"] = False` |
 | Truncation-threshold selection | `python paper_code/threshold_search/threshold_search.py` |
 | GNN architecture comparison (with / without edge attributes) | `python Comparison/compare_models.py`, `python Comparison/compare_models_no_edges.py` |
 
@@ -170,19 +174,21 @@ Three things to know before you run anything:
   the flag now rejects anything else rather than failing with a `KeyError`
   deep in preprocessing.
 
-`Comparison/run_mlp_loocv.py` runs an MLP too, but it is the **exploratory
-phase** MLP, not the baseline reported in the paper's comparison table — the
-paper's MLP and CNN baselines were tuned under the same protocol as the GENEA
-model, which is the `paper_code/` protocol. Use it to reproduce the
-architecture study, not the baseline table.
+`Comparison/run_mlp_loocv.py` also runs an MLP, but it is the **exploratory
+phase** MLP, not the paper's baseline. Use `paper_code/mlp_baseline_lopo.py`
+for the reported comparison, and `Comparison/` for the architecture study.
 
 ### Not included in this repository
 
-The RUL prediction models, and the MLP baseline behind the reported
-MLP/CNN/GENEA comparison and the with/without-HI ablation, were run in separate
-notebooks that are not part of this release. The stiffness-estimation pipeline
-they build on is fully included here, and the RUL model shares the GENEA
-architecture — only the regression target differs.
+**The RUL prediction models.** The code that produced the paper's RUL figures
+could not be located. `paper_code/notebooks/rul_prototype_gcnconv.ipynb` is an
+early prototype and is *not* that code — it uses GCNConv layers with the edge
+attributes zeroed out, whereas the paper's RUL model shares the GENEA
+architecture. It is included for provenance, clearly labelled, and
+[`paper_code/README.md`](paper_code/README.md) sets out the evidence. Everything
+the RUL model builds on — the HI, the graph construction, the LOPO protocol,
+MC-dropout uncertainty — is fully present; only the RUL target and its training
+script are missing.
 
 ---
 
