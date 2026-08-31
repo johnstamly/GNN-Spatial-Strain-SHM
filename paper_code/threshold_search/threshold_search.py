@@ -355,15 +355,15 @@ def mc_dropout_inference(model, loader, device, norm_params, num_samples):
 def main():
     thresholds_to_search = [85, 80, 70, 60]
     all_threshold_results = {}
-    search_results_dir = "Threshold_search/results"
+    search_results_dir = "output_images/threshold_search"
     os.makedirs(search_results_dir, exist_ok=True)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
     # --- Base Data Loading ---
-    stiffness_data_path = '../Data/Stiffness_Reduction'
-    strain_data_path = '../Data/Strain'
+    stiffness_data_path = 'Data/Stiffness_Reduction'
+    strain_data_path = 'Data/Strain'
     stiff_file_paths = sorted([f.path for f in os.scandir(stiffness_data_path) if f.path.endswith('.h5')])
     base_stiffness_dfs = {f'df{i}': pd.read_hdf(file_path)['Stiffness'] for i, file_path in enumerate(stiff_file_paths)}
     strain_file_paths = sorted([f.path for f in os.scandir(strain_data_path) if f.path.endswith('.h5')])
@@ -484,7 +484,7 @@ def main():
         print(json.dumps(convert_numpy_types(mean_metrics), indent=4))
 
     # --- SAVE FINAL AGGREGATED RESULTS ---
-    final_results_path = os.path.join("Threshold_search", "threshold_search_results.json")
+    final_results_path = os.path.join("output_images", "threshold_search", "threshold_search_results.json")
     with open(final_results_path, 'w') as f:
         json.dump(convert_numpy_types(all_threshold_results), f, indent=4)
     print(f"\n\nFINAL RESULTS SAVED TO: {final_results_path}")

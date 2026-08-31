@@ -613,6 +613,7 @@ final_results = convert_numpy_types(final_results)
 
 # Save results to JSON
 output_dir = "output_images/4Fold"
+os.makedirs(output_dir, exist_ok=True)
 results_path = os.path.join(output_dir, '4Fold_results.json')
 with open(results_path, 'w') as f:
     json.dump(final_results, f, indent=4)

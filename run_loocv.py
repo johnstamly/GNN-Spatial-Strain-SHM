@@ -70,8 +70,12 @@ def parse_args():
                              'the unseeded behaviour used for the published runs.')
     
     # Other parameters
-    parser.add_argument('--drop-level', type=int, default=85,
-                        help='Stiffness reduction level for truncation')
+    parser.add_argument('--drop-level', type=int, default=85, choices=[99, 95, 90, 85],
+                        help='Key naming the truncation point. These are keys, not '
+                             'percentages: 99/95/90 truncate at ~99/95/90%% of initial '
+                             'stiffness, but 85 truncates at ~70%%, which is the level '
+                             'used for the published results. Any other value raises '
+                             'KeyError -- see Data/README.md.')
     parser.add_argument('--no-visualize', action='store_true',
                         help='Disable visualization')
     parser.add_argument('--save-plots', action='store_true',

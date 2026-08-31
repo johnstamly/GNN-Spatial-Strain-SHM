@@ -55,7 +55,10 @@ CONFIG = {
 }
 # Map dataframe names to indices for fold selection
 # We exclude 'df0' as in the original script
-DF_INDICES = {'df0': 0, 'df1': 1, 'df2': 2, 'df3': 3, 'df4': 4}
+# The CNN reshapes 16 HI values into a 4x4 grid, so only the 16-sensor
+# panels (FOD4-FOD7) are usable. Including 'df0' (6-sensor FOD3) raises
+# IndexError. See paper_code/README.md.
+DF_INDICES = {'df1': 0, 'df2': 1, 'df3': 2, 'df4': 3}
 
 # %% [markdown]
 # # PLOTTING STYLE
@@ -414,7 +417,9 @@ def plot_predictions(true_values, predicted_values, metrics, title, key):
     plt.close()
 
 def unnormalize_target(y_norm, p):
-    return y_norm * p['target_std'] + p['target_mean']
+    # float() coercion: target_std/target_mean are 0-dim torch tensors while
+    # y_norm is a numpy array, which torch 2.x refuses to multiply.
+    return y_norm * float(p['target_std']) + float(p['target_mean'])
 
 # --- Helper function to enable dropout layers during test-time ---
 def enable_dropout(model):
@@ -576,6 +581,7 @@ final_results = convert_numpy_types(final_results)
 
 # Save results to JSON
 output_dir = "output_images/CNN_4Fold"
+os.makedirs(output_dir, exist_ok=True)
 results_path = os.path.join(output_dir, '4Fold_results.json')
 with open(results_path, 'w') as f:
     json.dump(final_results, f, indent=4)

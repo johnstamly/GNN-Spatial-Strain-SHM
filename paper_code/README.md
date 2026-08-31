@@ -67,12 +67,24 @@ loading the files:
   `reference_results/genea_5fold_with_fod3_results.json`, which was written
   before the overwrite. To get the missing checkpoints back you must re-run.
 
-### Modification made to the otherwise-verbatim scripts
+### Changes made to the original scripts
 
-One change, affecting output paths only, never results: `cnn_baseline_lopo.py`
-now writes to `output_images/CNN_5fold/` and `output_images/CNN_4Fold/` instead
-of sharing `output_images/FOD3_5fold/` and `output_images/4Fold/` with the GENEA
-scripts. This is exactly the collision that destroyed the two checkpoints above.
+The scripts are otherwise verbatim. Every change below was needed to make them
+run from the repository root on a current environment; none touches the model,
+the data, the hyperparameters or the metrics. All four scripts were then run end
+to end (with `epochs` cut to 1) to confirm they complete.
+
+| Script | Change | Why |
+|---|---|---|
+| `cnn_baseline_lopo.py` | outputs moved to `output_images/CNN_5fold/` and `output_images/CNN_4Fold/` | it shared output directories with the GENEA scripts — the collision that destroyed the two checkpoints above |
+| `cnn_baseline_lopo.py` | `DF_INDICES` restricted to the four 16-sensor panels | the CNN reshapes 16 HI values into a 4×4 grid, so the 6-sensor FOD3 raised `IndexError` before training started |
+| `cnn_baseline_lopo.py` | `float()` coercion in `unnormalize_target` | `target_mean`/`target_std` are 0-dim torch tensors and `y_norm` is a NumPy array; torch 2.x refuses the multiplication, so no fold could finish. Arithmetic is unchanged |
+| `cnn_baseline_lopo.py`, `genea_stiffness_lopo.py` | `os.makedirs` after the late `output_dir` reassignment | the final results JSON write failed with `FileNotFoundError` unless the directory happened to exist |
+| `threshold_search/threshold_search.py` | data paths `../Data/...` → `Data/...`; results now under `output_images/threshold_search/` | it expected to be run from inside its own subdirectory, and wrote a stray `Threshold_search/` at whatever the working directory was |
+
+Note in particular that `cnn_baseline_lopo.py` as originally saved could not
+complete a single fold on torch 2.x. If you are comparing against the paper's
+CNN numbers, they came from a run predating those edits.
 
 ## Selecting four-fold vs five-fold — a manual step
 

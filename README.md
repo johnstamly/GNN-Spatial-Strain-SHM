@@ -114,10 +114,10 @@ run_loocv.py                          LOOCV driver for the exploratory model
 run_best_comparison_model.py          re-runs the best architecture from Comparison/
 hyperparameter_tuning.py              Optuna study driver
 visualize_hpo_results.py              Optuna plots → visualizations/
-hpo_study.db                          the Optuna study (300 trials)
+hpo_study.db                          the Optuna study (408 completed trials)
 best_model/                           checkpoints from the exploratory model
 Comparison/          ← GNN architecture comparison + MLP baseline (research phase)
-results/                              per-panel HI curves as CSV
+results/                              per-panel HI curves as CSV; best_params.json
 plot_HIs.ipynb                        HI / strain curve plots
 ```
 
@@ -150,26 +150,39 @@ essentials:
 | CNN baseline | `python paper_code/cnn_baseline_lopo.py` |
 | Truncation-threshold selection | `python paper_code/threshold_search/threshold_search.py` |
 | GNN architecture comparison (with / without edge attributes) | `python Comparison/compare_models.py`, `python Comparison/compare_models_no_edges.py` |
-| MLP baseline | `python Comparison/run_mlp_loocv.py` |
 
-Two things to know before you run anything:
+Three things to know before you run anything:
 
 * **Four-fold vs five-fold is currently a manual edit.** Both GENEA scripts ship
   with all five panels in `DF_INDICES`. The four-panel protocol (FOD4–FOD7, used
   wherever a fixed 16-sensor input is required) was produced by deleting the
   `'df0'` entry. There is no CLI flag for it yet.
-* **Nothing is seeded.** No `torch.manual_seed` or `np.random.seed` call exists
-  in either codebase, so re-running gives different numbers each time. Expect
-  agreement in trend and magnitude, not digit for digit. If you are building on
-  this work, seed everything and average over several runs — see the
-  reproducibility section of `paper_code/README.md`.
+* **Nothing was seeded in the published runs.** Neither codebase called
+  `torch.manual_seed` or `np.random.seed`, so re-running gives different numbers
+  each time. Expect agreement in trend and magnitude, not digit for digit.
+  `run_loocv.py` now takes a `--seed`; it is off by default so that the original
+  behaviour is preserved. If you are building on this work, seed everything and
+  average over several runs — see the reproducibility section of
+  [`paper_code/README.md`](paper_code/README.md).
+* **`--drop-level` is a key, not a percentage.** In the root scripts,
+  `--drop-level 85` truncates at roughly **70 %** of initial stiffness, which is
+  the level used for the published results. Only 99, 95, 90 and 85 are valid;
+  the flag now rejects anything else rather than failing with a `KeyError`
+  deep in preprocessing.
+
+`Comparison/run_mlp_loocv.py` runs an MLP too, but it is the **exploratory
+phase** MLP, not the baseline reported in the paper's comparison table — the
+paper's MLP and CNN baselines were tuned under the same protocol as the GENEA
+model, which is the `paper_code/` protocol. Use it to reproduce the
+architecture study, not the baseline table.
 
 ### Not included in this repository
 
-The RUL prediction models and the MLP-with/without-HI ablation reported in the
-paper were run in separate notebooks that are not part of this release. The
-stiffness-estimation pipeline they build on is fully included here, and the RUL
-model shares the GENEA architecture — only the regression target differs.
+The RUL prediction models, and the MLP baseline behind the reported
+MLP/CNN/GENEA comparison and the with/without-HI ablation, were run in separate
+notebooks that are not part of this release. The stiffness-estimation pipeline
+they build on is fully included here, and the RUL model shares the GENEA
+architecture — only the regression target differs.
 
 ---
 
