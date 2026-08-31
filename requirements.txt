@@ -1,0 +1,23 @@
+# Pinned to the environment in which this repository was last verified.
+# Newer versions of PyTorch / PyTorch Geometric will very likely work, but
+# these are the exact versions that were checked.
+#
+#   Python 3.8.18
+#
+# Install PyTorch first, matching your CUDA version, from https://pytorch.org
+# then:  pip install -r requirements.txt
+
+torch==2.1.0
+torch-geometric==2.6.1
+numpy==1.24.3
+pandas==1.5.3
+tables>=3.7            # required by pandas.read_hdf for the .h5 data files
+matplotlib>=3.5
+tensorboardX>=2.5        # if you also have TensorFlow<2.9 pinned to protobuf<3.20,
+                         # use tensorboardX==2.5.1; 2.6.x requires protobuf>=3.20
+scienceplots>=2.0      # required: paper_code scripts call plt.style.use(['science','no-latex'])
+scipy>=1.8
+
+# Hyperparameter optimisation only (hyperparameter_tuning.py, visualize_hpo_results.py)
+optuna>=3.0
+plotly>=5.0

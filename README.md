@@ -1,119 +1,266 @@
-# Graph Neural Network for Stiffness and RUL Prediction - Code for Scientific Paper
+# Graph Neural Networks for SHM: Exploiting Spatial Interdependencies of Strain Data
 
-This repository contains the code accompanying the scientific paper "Graph Neural Networks for SHM: Exploiting Spatial Interdependencies of Strain Data" (link to paper once available), which explores the use of Graph Neural Networks (GNNs) for predicting stiffness reduction and remaining usefull life in composites structures undergone fatigue based on strain sensor data.
+[![DOI](https://img.shields.io/badge/DOI-10.1177%2F14759217251386802-blue.svg)](https://doi.org/10.1177/14759217251386802)
+[![Data DOI](https://img.shields.io/badge/Data%20DOI-10.5281%2Fzenodo.14627730-blue.svg)](https://doi.org/10.5281/zenodo.14627730)
+[![License: MIT](https://img.shields.io/badge/Code%20License-MIT-green.svg)](LICENSE)
+[![Data License: CC BY 4.0](https://img.shields.io/badge/Data%20License-CC%20BY%204.0-green.svg)](Data/LICENSE)
 
-## Project Structure
+Code and data accompanying:
 
-- `run_loocv.py`: Main Python script to run Leave-One-Out Cross-Validation for the best performing model.
-- `run_best_comparison_model.py`: Script to run the best performing model from comparisons (used for generating results in the paper).
-- `gnn_utils/`: Python package containing utility functions and classes for data processing, model definition, training, and visualization.
-  - `data_preprocessing.py`: Basic data preprocessing functions.
-  - `data_processing.py`: Advanced data processing functions.
-  - `model.py`: GNN model definition.
-  - `training.py`: Training and evaluation utilities.
-  - `graph_data.py`: Graph data preparation utilities.
-  - `visualization.py`: Plotting and visualization functions.
-  - `loocv.py`: Leave-One-Out Cross-Validation utilities.
-  - `__init__.py`: Package initialization.
-- `Data/`: Directory containing the input data used in the paper.
-  - `Stiffness_Reduction/`: Stiffness reduction data.
-  - `Strain/`: Strain sensor data.
-- `Comparison/`: This directory contains scripts, code, and results from model comparisons, edge attribute analysis, and MLP comparisons that were performed during the research phase. These are included for completeness but are not necessary to reproduce the main results presented in the paper.
-  - `best_comparison_model/`: Results from running the best comparison models.
-  - `edge_comparison/`: Results and analysis comparing models with and without edge attributes.
-  - `model_comparison/`: Results from comparing different GNN architectures with edge attributes.
-  - `model_comparison_no_edges/`: Results from comparing different GNN architectures without edge attributes.
-  - `mlp_models/`: Code and results for MLP comparisons.
-  - `compare_edge_vs_no_edge.py`: Script to compare models with and without edge attributes.
-  - `compare_models_fixed.py`: Script for fixed model comparisons.
-  - `compare_models_no_edges.py`: Script to compare GNN architectures without edge attributes.
-  - `compare_models.py`: Script to compare different GNN architectures with edge attributes.
-  - `mlp_comparison.py`: Script for MLP model comparison.
-  - `run_mlp_loocv.py`: Script to run LOOCV for MLP models.
-  - `model_comparison_no_edges_README.md`: README for no-edge model comparisons.
-  - `model_comparison_README.md`: README for model comparisons with edges.
-  - `model_comparison_report.md`: Report on model comparisons.
-  - `mlp_model_report.md`: Report on MLP model comparison.
-- `results/`: Directory containing the results from running the best model (e.g., LOOCV predictions, loss plots).
-- `visualizations/`: Directory containing visualizations generated during hyperparameter tuning.
-- `hpo_study.db`: Optuna study database for hyperparameter optimization.
-- `hyperparameter_tuning.py`: Script for hyperparameter tuning.
-- `mlp_comparison.py`: Script for MLP model comparison.
-- `best_model_README.md`: README for the best model results.
-- `log_best_model/`: Log files for the best model runs.
-- `best_model/`: Saved state dictionaries for the best model from each LOOCV fold.
-- `visualize_hpo_results.py`: Script to visualize hyperparameter optimization results.
+> Stamatelatos G, Galanopoulos G, Zarouchas D and Loutas T.
+> **Graph neural networks for SHM: exploiting spatial interdependencies of
+> strain data for diagnostics and prognostics.**
+> *Structural Health Monitoring*, 2025. Advance online publication.
+> [doi:10.1177/14759217251386802](https://doi.org/10.1177/14759217251386802)
 
-## Model Architectures
+The paper introduces **GENEA** (GENConv with Edge Attributes), a graph neural
+network that treats a set of spatially distributed strain sensors as a graph and
+learns from the *relationships between* sensors rather than from each sensor in
+isolation. It is paired with a custom **Health Indicator (HI)** that decouples
+damage signatures from operational load. Together they estimate structural
+stiffness reduction (diagnostics) and Remaining Useful Life (prognostics) on
+aeronautical composite panels under fatigue.
 
-### With Edge Attributes
-1. **GENConvModel**: Uses GENConv layers with edge attributes
-2. **SAGPoolModel**: Implements SAGPooling for hierarchical pooling
-3. **GATv2Model**: Uses Graph Attention Network v2 layers
-4. **GCNModel**: Implements Graph Convolutional Network layers
-5. **EdgeConvModel**: Uses EdgeConv layers with dynamic edge features
+---
 
-### Without Edge Attributes
-1. **GCNModel_NoEdges**: Graph Convolutional Network without edge attributes
-2. **GINModel**: Graph Isomorphism Network
-3. **SGConvModel**: Simplified Graph Convolution
-4. **GraphSAGEModel**: Graph SAmple and aggreGatE
-5. **ChebConvModel**: Chebyshev Spectral Graph Convolution
-
-## Reproducing Results
-
-To reproduce the main results presented in the paper, you can use the `run_loocv.py` script. Ensure you have the necessary data in the `Data/` directory.
+## Quick start
 
 ```bash
-python run_loocv.py [options]
+git clone https://github.com/johnstamly/GNN-Spatial-Strain-SHM.git
+cd GNN-Spatial-Strain-SHM
+
+# Install PyTorch first, matching your CUDA version: https://pytorch.org
+pip install -r requirements.txt
+
+# Reproduce the paper's stiffness-estimation experiment
+python paper_code/genea_stiffness_lopo.py
 ```
 
-Options:
-- `--stiffness-path`: Path to stiffness data directory (default: `Data/Stiffness_Reduction/`)
-- `--strain-path`: Path to strain data directory (default: `Data/Strain/`)
-- `--batch-size`: Batch size for training
-- `--hidden-dim`: Hidden dimension for GNN models
-- `--num-gnn-layers`: Number of GNN layers
-- `--dropout`: Dropout probability
-- `--epochs`: Maximum number of epochs
-- `--patience`: Patience for early stopping
-- `--output-dir`: Directory to save results (default: `results/`)
+Always run from the repository root — the scripts use the relative paths
+`Data/Strain` and `Data/Stiffness_Reduction`.
 
-The script will perform Leave-One-Out Cross-Validation using the best performing model identified in the comparison phase and save the predictions and evaluation metrics to the specified output directory.
+Trained checkpoints from the published runs are in `paper_code/trained_models/`
+(~25 kB each) if you want to evaluate the models without retraining — read the
+two loading caveats in [`paper_code/README.md`](paper_code/README.md) first.
 
-## Dependencies
+---
 
-- Python 3.6+
-- PyTorch
-- PyTorch Geometric
-- NumPy
-- Pandas
-- Matplotlib
-- TensorBoardX
-- scienceplots (optional)
-- Optuna (for hyperparameter tuning, not required for reproducing main results)
+## The two ideas, in short
 
-Install core dependencies with:
-```bash
-pip install torch torch-geometric numpy pandas matplotlib tensorboardx
-```
-Install optional dependencies:
-```bash
-pip install scienceplots optuna
+### 1. The Health Indicator decouples damage from load
+
+Raw strain is dominated by the applied fatigue load, which swamps the far
+subtler signature of accumulating damage. The HI is the **cumulative absolute
+first derivative of strain over time**, computed per sensor:
+
+```python
+strain_resampled = strain.resample("200s").mean().rolling(10, min_periods=1).mean()
+HI = np.cumsum(np.abs(np.diff(strain_resampled.values, axis=0)), axis=0)
 ```
 
-## Interpreting Results
+Load cycling produces oscillations that largely cancel in the mean but
+accumulate in the absolute derivative only when the underlying stiffness
+changes. The result is a monotonically increasing, load-independent quantity per
+sensor. Feeding the HI to a plain MLP instead of raw strain improves RMSE by
+roughly 40 % in the paper's ablation, so most of the benefit is in the feature,
+before any graph is involved.
 
-The `results/` directory will contain `loocv_results.json` with key metrics (MSE, RMSE, MAPE, R²) and `loocv_predictions.png` visualizing the true vs predicted stiffness reduction. Loss plots for each fold will also be saved.
+### 2. The graph exploits spatial interdependency
 
-## License
+At each time step, one panel becomes one graph:
 
-The code in this repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+| | |
+|---|---|
+| **Nodes** | one per strain sensor (6, 16 or 24 depending on the panel) |
+| **Node feature** `x` | that sensor's HI at time `t`, a single scalar |
+| **Edges** | fully connected, no self-loops |
+| **Edge feature** `e_ij` | `HI_i − HI_j`, the *difference* in HI between the two sensors |
+| **Target** `y` | graph-level scalar: stiffness as % of initial, or RUL |
 
-The data in the `Data/` directory is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+Encoding the pairwise HI *difference* on the edge is what makes the model
+spatially aware: damage between two sensors shows up as a divergence in their
+HI accumulation rates, and that divergence is exactly what the edge carries.
+
+Because the graph is rebuilt from each panel's own sensor count, the same
+trained model runs unchanged on a panel with a different number of sensors —
+which is how the paper tests generalisation on the 6-sensor FOD3 panel using a
+model trained on 16-sensor panels. A CNN or MLP cannot do this without padding.
+
+Prediction is point-wise: the HI at a single time step predicts stiffness at
+that same time step. No temporal model (LSTM, Transformer) is used, deliberately
+— it isolates the spatial contribution being measured.
+
+---
+
+## Repository layout
+
+```
+paper_code/          ← the scripts that produced the published results  ★ start here
+  genea_stiffness_lopo.py             GENEA, LOPO CV, stiffness estimation
+  genea_stiffness_lopo_with_fod3.py   five-fold LOPO incl. 6-sensor FOD3 + MC dropout
+  cnn_baseline_lopo.py                2-D CNN baseline (HI reshaped to a 4×4 grid)
+  threshold_search/                   truncation-threshold sweep (85/80/70/60 %)
+  reference_results/                  metrics JSON from the actual paper runs
+  trained_models/                     per-fold checkpoints from the paper runs
+  README.md                           architecture, config, reproducibility caveats
+
+Data/                ← strain and stiffness measurements (CC BY 4.0)
+  Strain/                             FBG strain time series, FOD3–FOD7
+  Stiffness_Reduction/                MTS stiffness per fatigue block
+  README.md                           provenance, panel↔key mapping, sensor counts
+
+gnn_utils/           ← earlier exploratory implementation (model-selection phase)
+run_loocv.py                          LOOCV driver for the exploratory model
+run_best_comparison_model.py          re-runs the best architecture from Comparison/
+hyperparameter_tuning.py              Optuna study driver
+visualize_hpo_results.py              Optuna plots → visualizations/
+hpo_study.db                          the Optuna study (300 trials)
+best_model/                           checkpoints from the exploratory model
+Comparison/          ← GNN architecture comparison + MLP baseline (research phase)
+results/                              per-panel HI curves as CSV
+plot_HIs.ipynb                        HI / strain curve plots
+```
+
+### Which code should I use?
+
+**Use `paper_code/`.** It contains the model and protocol behind the published
+numbers, and its README documents the architecture, every hyperparameter, and
+the reproducibility caveats.
+
+The root-level code (`gnn_utils/`, `run_loocv.py`, `Comparison/`) is the earlier
+**model-selection phase**: it is how GENConv was chosen over GATv2, GCN,
+EdgeConv, SAGPool, GIN, GraphSAGE, SGConv and ChebConv, and how the value of
+edge attributes was quantified. It is a different, larger model (hidden
+dimension 64, sum pooling, no residual connections) and it does **not**
+reproduce the paper's main tables. It is kept because the architecture study is
+part of the paper's argument. `paper_code/README.md` has a side-by-side
+comparison of the two.
+
+---
+
+## Reproducing the paper
+
+See **[`paper_code/README.md`](paper_code/README.md)** for the full detail. The
+essentials:
+
+| Paper result | Command |
+|---|---|
+| Stiffness estimation, GENEA | `python paper_code/genea_stiffness_lopo.py` |
+| Generalisation to the 6-sensor FOD3 panel + MC-dropout uncertainty | `python paper_code/genea_stiffness_lopo_with_fod3.py` |
+| CNN baseline | `python paper_code/cnn_baseline_lopo.py` |
+| Truncation-threshold selection | `python paper_code/threshold_search/threshold_search.py` |
+| GNN architecture comparison (with / without edge attributes) | `python Comparison/compare_models.py`, `python Comparison/compare_models_no_edges.py` |
+| MLP baseline | `python Comparison/run_mlp_loocv.py` |
+
+Two things to know before you run anything:
+
+* **Four-fold vs five-fold is currently a manual edit.** Both GENEA scripts ship
+  with all five panels in `DF_INDICES`. The four-panel protocol (FOD4–FOD7, used
+  wherever a fixed 16-sensor input is required) was produced by deleting the
+  `'df0'` entry. There is no CLI flag for it yet.
+* **Nothing is seeded.** No `torch.manual_seed` or `np.random.seed` call exists
+  in either codebase, so re-running gives different numbers each time. Expect
+  agreement in trend and magnitude, not digit for digit. If you are building on
+  this work, seed everything and average over several runs — see the
+  reproducibility section of `paper_code/README.md`.
+
+### Not included in this repository
+
+The RUL prediction models and the MLP-with/without-HI ablation reported in the
+paper were run in separate notebooks that are not part of this release. The
+stiffness-estimation pipeline they build on is fully included here, and the RUL
+model shares the GENEA architecture — only the regression target differs.
+
+---
+
+## Data
+
+Five hybrid composite–metal "FOD panels" (FOD3–FOD7) fatigued to failure, each
+instrumented with fibre Bragg grating strain sensors, from the H2020 **MORPHO**
+project.
+
+The panel-to-key mapping is **positional** (`df0`=FOD3 … `df4`=FOD7) and the
+sensor counts differ per panel (FOD3 has 6, FOD5 has 24 truncated to 16). Both
+are easy to trip over — see **[`Data/README.md`](Data/README.md)** before
+modifying anything under `Data/`.
+
+Raw dataset: Paunikar S, Galanopoulos G and Rébillat M, Zenodo, 2025,
+[doi:10.5281/zenodo.14627730](https://doi.org/10.5281/zenodo.14627730) (CC BY
+4.0). Experimental campaign: Galanopoulos G et al., *Aerospace* 2025; 12(11):
+963, [doi:10.3390/aerospace12110963](https://doi.org/10.3390/aerospace12110963).
+
+---
+
+## Requirements
+
+Pinned in [`requirements.txt`](requirements.txt) to the environment last
+verified: Python 3.8.18, PyTorch 2.1.0, PyTorch Geometric 2.6.1, pandas 1.5.3,
+NumPy 1.24.3. Newer versions will very likely work.
+
+`tables` is required (pandas reads the `.h5` data through it) and
+`scienceplots` is required by the `paper_code/` scripts, which call
+`plt.style.use(['science', 'no-latex'])`. A GPU is optional — the published
+GENEA model has only 3,495 parameters (counted from
+`paper_code/trained_models/genea_4fold/best_model_df1.pth`), so the bottleneck
+is the number of graphs per epoch rather than model size.
+
+---
 
 ## Citation
 
-If you use this code in your research, please cite the accompanying paper:
+If you use this code or data, please cite the paper:
 
-[Add Citation Information Here]
+```bibtex
+@article{stamatelatos2025gnnshm,
+  title   = {Graph neural networks for {SHM}: exploiting spatial
+             interdependencies of strain data for diagnostics and prognostics},
+  author  = {Stamatelatos, Giannis and Galanopoulos, Georgios and
+             Zarouchas, Dimitrios and Loutas, Theodoros},
+  journal = {Structural Health Monitoring},
+  year    = {2025},
+  doi     = {10.1177/14759217251386802},
+  note    = {Advance online publication}
+}
+```
+
+APA 7:
+
+> Stamatelatos, G., Galanopoulos, G., Zarouchas, D., & Loutas, T. (2025). Graph
+> neural networks for SHM: Exploiting spatial interdependencies of strain data
+> for diagnostics and prognostics. *Structural Health Monitoring*. Advance
+> online publication. https://doi.org/10.1177/14759217251386802
+
+The article is currently SAGE OnlineFirst (article number 14759217251386802) and
+has no volume, issue or page range yet. Once an issue is assigned, update the
+BibTeX entry above and [`CITATION.cff`](CITATION.cff).
+
+Machine-readable metadata is in [`CITATION.cff`](CITATION.cff) — GitHub renders
+it as a "Cite this repository" button.
+
+If you use the measurements, please also cite the Zenodo dataset (see
+[`Data/README.md`](Data/README.md)).
+
+---
+
+## Authors
+
+| | |
+|---|---|
+| **Giannis Stamatelatos** ([ORCID](https://orcid.org/0009-0009-3560-6639)) | Applied Mechanics Laboratory, University of Patras, Greece |
+| **Georgios Galanopoulos** ([ORCID](https://orcid.org/0000-0003-4998-1308)) | Structural Integrity and Composites Group, TU Delft, The Netherlands |
+| **Dimitrios Zarouchas** | Center of Excellence in AI for Structures, TU Delft, The Netherlands |
+| **Theodoros Loutas** | Applied Mechanics Laboratory, University of Patras, Greece |
+
+Corresponding author: Giannis Stamatelatos — johnstamly@gmail.com
+
+## Acknowledgements
+
+Safran Composites for the FOD panels, Fraunhofer IFAM for the printed PZT
+sensors, and FiSens GmbH for the optical fibres and interrogation systems.
+
+Funded by the European Union's Horizon 2020 research and innovation programme
+under grant agreement **No 101006854** (MORPHO).
+
+## License
+
+Code: [MIT](LICENSE). Data: [CC BY 4.0](Data/LICENSE).

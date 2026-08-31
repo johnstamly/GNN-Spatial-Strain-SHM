@@ -1,0 +1,25 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# TensorBoard runs (regenerated on every training run)
+log/*/
+!log/.gitkeep
+
+# Outputs produced by re-running the scripts.
+# The reference outputs that accompany the paper are tracked explicitly
+# under paper_code/reference_results/ and paper_code/trained_models/.
+output_images/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
