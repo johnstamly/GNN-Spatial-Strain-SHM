@@ -1,0 +1,56 @@
+{
+  "title": "GNN-Spatial-Strain-SHM: Graph Neural Networks for strain-based SHM of composite panels",
+  "upload_type": "software",
+  "license": "mit",
+  "description": "<p>Code and data accompanying the article <em>Graph neural networks for SHM: exploiting spatial interdependencies of strain data for diagnostics and prognostics</em>, <em>Structural Health Monitoring</em>, 2025, <a href=\"https://doi.org/10.1177/14759217251386802\">doi:10.1177/14759217251386802</a>.</p><p>Implements the GENEA (GENConv with Edge Attributes) model, the load-decoupled Health Indicator derived from the cumulative absolute first derivative of strain, and the Leave-One-Panel-Out cross-validation protocol used in the paper. The <code>paper_code/</code> directory holds the scripts that produced the published results, together with reference metrics and per-fold checkpoints; the repository root holds the earlier model-selection code behind the GNN architecture comparison.</p><p>The measurements under <code>Data/</code> derive from the H2020 MORPHO project dataset (<a href=\"https://doi.org/10.5281/zenodo.14627730\">doi:10.5281/zenodo.14627730</a>, CC BY 4.0). Code is MIT licensed; data is CC BY 4.0.</p><p>Funded by the European Union's Horizon 2020 research and innovation programme under grant agreement No 101006854.</p>",
+  "creators": [
+    {
+      "name": "Stamatelatos, Giannis",
+      "affiliation": "Applied Mechanics Laboratory (AML), Department of Mechanical Engineering and Aeronautics, University of Patras, Greece",
+      "orcid": "0009-0009-3560-6639"
+    },
+    {
+      "name": "Galanopoulos, Georgios",
+      "affiliation": "Structural Integrity and Composites Group, Faculty of Aerospace Engineering, Delft University of Technology, The Netherlands",
+      "orcid": "0000-0003-4998-1308"
+    },
+    {
+      "name": "Zarouchas, Dimitrios",
+      "affiliation": "Center of Excellence in Artificial Intelligence for Structures, Faculty of Aerospace Engineering, Delft University of Technology, The Netherlands"
+    },
+    {
+      "name": "Loutas, Theodoros",
+      "affiliation": "Applied Mechanics Laboratory (AML), Department of Mechanical Engineering and Aeronautics, University of Patras, Greece"
+    }
+  ],
+  "keywords": [
+    "graph neural networks",
+    "structural health monitoring",
+    "composite structures",
+    "strain",
+    "remaining useful life",
+    "health indicator",
+    "uncertainty quantification",
+    "machine learning"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.1177/14759217251386802",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.14627730",
+      "relation": "isDerivedFrom",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.3390/aerospace12110963",
+      "relation": "isSupplementedBy",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    }
+  ]
+}
