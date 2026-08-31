@@ -4,6 +4,12 @@ This directory holds the preprocessed strain and stiffness measurements used by
 every script in this repository. Both `.csv` and `.h5` copies are provided; the
 code reads the **`.h5`** files (`pandas.read_hdf`, which requires `tables`).
 
+The `.csv` copies are kept **deliberately**, for convenience: they let you open
+or load the data without an HDF5 stack, and from tools other than pandas. They
+account for roughly half the size of the repository and are not read by any
+script here, so they look redundant at a glance — they are not, and please do
+not remove them as cleanup.
+
 ## Provenance and attribution
 
 The measurements derive from the fatigue campaign of the H2020 **MORPHO**
